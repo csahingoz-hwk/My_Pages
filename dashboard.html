@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çağlar's Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070B15;
+  --surface: #0D1220;
+  --surface2: #131929;
+  --surface3: #1A2133;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --gold: #E8A825;
+  --gold-dim: rgba(232,168,37,0.12);
+  --gold-soft: rgba(232,168,37,0.25);
+  --teal: #2DD4BF;
+  --teal-dim: rgba(45,212,191,0.1);
+  --violet: #818CF8;
+  --violet-dim: rgba(129,140,248,0.1);
+  --red: #F87171;
+  --green: #34D399;
+  --amber: #FBBF24;
+  --text: #CBD5E1;
+  --text-bright: #F1F5F9;
+  --text-dim: #4B5563;
+  --text-muted: #374151;
+  --kf-green: #00CD97;
+  --kf-navy: #00173B;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 18px 20px 40px;
+  background-image: 
+    radial-gradient(ellipse 80% 40% at 50% -20%, rgba(45,212,191,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 30% at 90% 80%, rgba(232,168,37,0.03) 0%, transparent 50%);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--kf-green), #005740);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(0,205,151,0.2);
+}
+
+.brand-text h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+.brand-text p {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-top: 5px;
+  letter-spacing: 0.5px;
+}
+
+.header-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.clock {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text-bright);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.date-line {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.weather-line {
+  font-size: 11px;
+  color: var(--gold);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── TASKS GRID ── */
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.task-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: border-color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.kf-card::before { background: linear-gradient(90deg, var(--kf-green), transparent); }
+.per-card::before { background: linear-gradient(90deg, var(--teal), transparent); }
+.fam-card::before { background: linear-gradient(90deg, var(--gold), transparent); }
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.task-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-count {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.pct-badge {
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.kf-badge { background: rgba(0,205,151,0.15); color: var(--kf-green); }
+.per-badge { background: var(--teal-dim); color: var(--teal); }
+.fam-badge { background: var(--gold-dim); color: var(--gold); }
+
+/* Progress bar */
+.progress-track {
+  height: 3px;
+  background: var(--surface3);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  min-width: 0%;
+}
+
+.kf-card .progress-fill { background: linear-gradient(90deg, var(--kf-green), #00E5A8); }
+.per-card .progress-fill { background: linear-gradient(90deg, var(--teal), #67E8F9); }
+.fam-card .progress-fill { background: linear-gradient(90deg, var(--gold), #FCD34D); }
+
+/* Task list */
+.task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding-right: 2px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.task-item:hover { border-color: var(--border2); background: var(--surface3); }
+.task-item.done { opacity: 0.45; }
+
+/* Checkbox */
+.cb {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--text-muted);
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  background: transparent;
+}
+
+.task-item.done .cb { background: var(--green); border-color: var(--green); }
+
+.cb-check { display: none; }
+.task-item.done .cb-check { display: block; }
+
+/* Priority dot */
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-high { background: var(--red); box-shadow: 0 0 4px rgba(248,113,113,0.5); }
+.dot-med  { background: var(--amber); box-shadow: 0 0 4px rgba(251,191,36,0.5); }
+.dot-low  { background: var(--green); }
+
+/* Task text */
+.task-text {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.45;
+  outline: none;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  cursor: text;
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.task-item.done .task-text {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.task-del {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  font-size: 15px;
+  line-height: 1;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.task-item:hover .task-del { opacity: 1; }
+.task-del:hover { color: var(--red); background: rgba(248,113,113,0.1); }
+
+/* Add area */
+.add-row {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.pri-select {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 7px;
+}
+
+.pri-btn {
+  font-size: 9px;
+  font-family: 'IBM Plex Mono', monospace;
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+
+.pri-btn.sel-high { background: rgba(248,113,113,0.15); border-color: var(--red); color: var(--red); }
+.pri-btn.sel-med  { background: rgba(251,191,36,0.15);  border-color: var(--amber); color: var(--amber); }
+.pri-btn.sel-low  { background: rgba(52,211,153,0.15);  border-color: var(--green); color: var(--green); }
+
+.add-input {
+  flex: 1;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 12px;
+  color: var(--text-bright);
+  font-family: 'Sora', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.add-input::placeholder { color: var(--text-dim); }
+.add-input:focus { border-color: rgba(255,255,255,0.2); }
+
+.kf-card .add-input:focus  { border-color: var(--kf-green); }
+.per-card .add-input:focus { border-color: var(--teal); }
+.fam-card .add-input:focus { border-color: var(--gold); }
+
+.add-btn {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text-dim);
+  cursor: pointer;
+  width: 34px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.add-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+/* ── BOTTOM GRID ── */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 300px;
+  gap: 14px;
+}
+
+/* ── PANEL BASE ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  overflow: hidden;
+}
+
+.panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  font-size: 10px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  font-family: 'Sora', sans-serif;
+}
+
+.tab-btn.active-teal  { background: var(--teal-dim);   border-color: rgba(45,212,191,0.35);  color: var(--teal); }
+.tab-btn.active-gold  { background: var(--gold-dim);   border-color: rgba(232,168,37,0.35);  color: var(--gold); }
+.tab-btn.active-violet{ background: var(--violet-dim); border-color: rgba(129,140,248,0.35); color: var(--violet); }
+
+/* ── NEWS ── */
+.feed { display: none; max-height: 400px; overflow-y: auto; }
+.feed.active { display: block; }
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--border2);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.news-item {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.news-item:last-child { border-bottom: none; }
+
+.news-item a {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.45;
+  transition: color 0.15s;
+}
+.news-item a:hover { color: var(--teal); }
+
+.news-meta {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-top: 3px;
+}
+
+.err-state {
+  color: var(--red);
+  font-size: 11px;
+  padding: 12px 0;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── MARKETS ── */
+.mkt-section { display: none; }
+.mkt-section.active { display: block; }
+
+.mkt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.mkt-item:last-child { border-bottom: none; }
+
+.mkt-left { flex: 1; }
+.mkt-name { font-size: 13px; font-weight: 500; color: var(--text-bright); }
+.mkt-sub  { font-size: 10px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; margin-top: 1px; }
+
+.mkt-right { text-align: right; }
+.mkt-price {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text-bright);
+}
+.mkt-chg {
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.up   { color: var(--green); }
+.down { color: var(--red); }
+.neu  { color: var(--text-dim); }
+
+.mkt-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.mkt-updated { font-size: 10px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; }
+.refresh-btn {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.refresh-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── CALENDAR ── */
+.cal-list { max-height: 420px; overflow-y: auto; }
+
+.cal-item {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.cal-item:last-child { border-bottom: none; }
+
+.cal-date {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 5px 8px;
+  text-align: center;
+  min-width: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.cal-day {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  line-height: 1;
+  color: var(--gold);
+}
+
+.cal-mon {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.cal-info { flex: 1; min-width: 0; }
+.cal-name { font-size: 12px; font-weight: 500; color: var(--text-bright); line-height: 1.35; }
+.cal-note { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+.badge {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-top: 4px;
+  display: inline-block;
+  letter-spacing: 0.3px;
+}
+.badge-public  { background: rgba(52,211,153,0.12);  color: var(--green); }
+.badge-school  { background: rgba(129,140,248,0.12); color: var(--violet); }
+.badge-kids    { background: rgba(232,168,37,0.12);  color: var(--gold); }
+.badge-alert   { background: rgba(248,113,113,0.12); color: var(--red); }
+
+.cal-countdown {
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.cd-today    { color: var(--red); }
+.cd-soon     { color: var(--amber); }
+.cd-upcoming { color: var(--text-dim); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1000px) {
+  .tasks-grid { grid-template-columns: 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+}
+
+/* ── FADE IN ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.task-card, .panel {
+  animation: fadeUp 0.4s ease both;
+}
+.task-card:nth-child(1) { animation-delay: 0.05s; }
+.task-card:nth-child(2) { animation-delay: 0.10s; }
+.task-card:nth-child(3) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="header">
+  <div class="header-brand">
+    <div class="brand-icon">⬡</div>
+    <div class="brand-text">
+      <h1>Çağlar's Command Centre</h1>
+      <p id="greeting">— — —</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="date-line" id="dateLine">— — —</div>
+    <div class="weather-line">📍 Chessington, Surrey</div>
+  </div>
+</div>
+
+<!-- ══════════ TASKS ══════════ -->
+<div class="section-label">⬜ Task Tracker</div>
+<div class="tasks-grid">
+
+  <!-- KF TASKS -->
+  <div class="task-card kf-card">
+    <div class="task-card-header">
+      <div class="task-card-title" style="color:var(--kf-green)">🏢 Korn Ferry</div>
+      <div class="task-stats">
+        <span class="task-count" id="kf-count">0 / 0</span>
+        <span class="pct-badge kf-badge" id="kf-pct">0%</span>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="kf-bar" style="width:0%"></div></div>
+    <ul class="task-list" id="kf-list"></ul>
+    <div class="pri-select" id="kf-pri">
+      <button class="pri-btn sel-high" onclick="selPri('kf','high')">● HIGH</button>
+      <button class="pri-btn" onclick="selPri('kf','med')">● MED</button>
+      <button class="pri-btn" onclick="selPri('kf','low')">● LOW</button>
+    </div>
+    <div class="add-row">
+      <input class="add-input" id="kf-inp" placeholder="Add KF task…"
+        onkeydown="if(event.key==='Enter')addTask('kf')">
+      <button class="add-btn" onclick="addTask('kf')">+</button>
+    </div>
+  </div>
+
+  <!-- PERSONAL TASKS -->
+  <div class="task-card per-card">
+    <div class="task-card-header">
+      <div class="task-card-title" style="color:var(--teal)">👤 Personal</div>
+      <div class="task-stats">
+        <span class="task-count" id="per-count">0 / 0</span>
+        <span class="pct-badge per-badge" id="per-pct">0%</span>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="per-bar" style="width:0%"></div></div>
+    <ul class="task-list" id="per-list"></ul>
+    <div class="pri-select" id="per-pri">
+      <button class="pri-btn sel-high" onclick="selPri('per','high')">● HIGH</button>
+      <button class="pri-btn" onclick="selPri('per','med')">● MED</button>
+      <button class="pri-btn" onclick="selPri('per','low')">● LOW</button>
+    </div>
+    <div class="add-row">
+      <input class="add-input" id="per-inp" placeholder="Add personal task…"
+        onkeydown="if(event.key==='Enter')addTask('per')">
+      <button class="add-btn" onclick="addTask('per')">+</button>
+    </div>
+  </div>
+
+  <!-- FAMILY TASKS -->
+  <div class="task-card fam-card">
+    <div class="task-card-header">
+      <div class="task-card-title" style="color:var(--gold)">👨‍👩‍👧‍👧 Family</div>
+      <div class="task-stats">
+        <span class="task-count" id="fam-count">0 / 0</span>
+        <span class="pct-badge fam-badge" id="fam-pct">0%</span>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="fam-bar" style="width:0%"></div></div>
+    <ul class="task-list" id="fam-list"></ul>
+    <div class="pri-select" id="fam-pri">
+      <button class="pri-btn sel-high" onclick="selPri('fam','high')">● HIGH</button>
+      <button class="pri-btn" onclick="selPri('fam','med')">● MED</button>
+      <button class="pri-btn" onclick="selPri('fam','low')">● LOW</button>
+    </div>
+    <div class="add-row">
+      <input class="add-input" id="fam-inp" placeholder="Add family task…"
+        onkeydown="if(event.key==='Enter')addTask('fam')">
+      <button class="add-btn" onclick="addTask('fam')">+</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ BOTTOM PANELS ══════════ -->
+<div class="section-label">◈ Live Intelligence</div>
+<div class="bottom-grid">
+
+  <!-- NEWS PANEL -->
+  <div class="panel">
+    <div class="panel-title">
+      <span>📰 News</span>
+      <button class="refresh-btn" onclick="reloadCurrentFeed()">↻</button>
+    </div>
+    <div class="tabs" id="news-tabs">
+      <button class="tab-btn active-teal" onclick="switchFeed('uk',this)">🇬🇧 UK</button>
+      <button class="tab-btn" onclick="switchFeed('tr',this)">🇹🇷 Turkey</button>
+      <button class="tab-btn" onclick="switchFeed('me',this)">🌙 ME</button>
+      <button class="tab-btn" onclick="switchFeed('gala',this)">🔴🟡 GS</button>
+      <button class="tab-btn" onclick="switchFeed('epl',this)">⚽ EPL</button>
+    </div>
+    <div class="feed active" id="feed-uk"><div class="loading-state"><div class="spinner"></div> Loading news…</div></div>
+    <div class="feed" id="feed-tr"><div class="loading-state"><div class="spinner"></div> Loading news…</div></div>
+    <div class="feed" id="feed-me"><div class="loading-state"><div class="spinner"></div> Loading news…</div></div>
+    <div class="feed" id="feed-gala"><div class="loading-state"><div class="spinner"></div> Loading news…</div></div>
+    <div class="feed" id="feed-epl"><div class="loading-state"><div class="spinner"></div> Loading news…</div></div>
+  </div>
+
+  <!-- MARKETS PANEL -->
+  <div class="panel">
+    <div class="panel-title">
+      <span>📈 Markets</span>
+      <button class="refresh-btn" onclick="loadAllMarkets()">↻ Refresh</button>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active-gold" onclick="switchMkt('fx',this)">FX</button>
+      <button class="tab-btn" onclick="switchMkt('indices',this)">Indices</button>
+      <button class="tab-btn" onclick="switchMkt('crypto',this)">Crypto</button>
+      <button class="tab-btn" onclick="switchMkt('metals',this)">Metals</button>
+    </div>
+
+    <!-- FX -->
+    <div class="mkt-section active" id="mkt-fx">
+      <div class="loading-state"><div class="spinner"></div> Loading rates…</div>
+    </div>
+
+    <!-- Indices -->
+    <div class="mkt-section" id="mkt-indices">
+      <div class="mkt-item">
+        <div class="mkt-left"><div class="mkt-name">FTSE 100</div><div class="mkt-sub">London · LSE</div></div>
+        <div class="mkt-right"><div class="mkt-price" id="p-ftse">—</div><div class="mkt-chg neu" id="c-ftse">—</div></div>
+      </div>
+      <div class="mkt-item">
+        <div class="mkt-left"><div class="mkt-name">BIST 100</div><div class="mkt-sub">Istanbul · Borsa</div></div>
+        <div class="mkt-right"><div class="mkt-price" id="p-bist">—</div><div class="mkt-chg neu" id="c-bist">—</div></div>
+      </div>
+      <div class="mkt-item">
+        <div class="mkt-left"><div class="mkt-name">S&amp;P 500</div><div class="mkt-sub">New York · NYSE</div></div>
+        <div class="mkt-right"><div class="mkt-price" id="p-sp">—</div><div class="mkt-chg neu" id="c-sp">—</div></div>
+      </div>
+      <div class="mkt-item">
+        <div class="mkt-left"><div class="mkt-name">Dow Jones</div><div class="mkt-sub">US30</div></div>
+        <div class="mkt-right"><div class="mkt-price" id="p-dj">—</div><div class="mkt-chg neu" id="c-dj">—</div></div>
+      </div>
+      <div class="mkt-item">
+        <div class="mkt-left"><div class="mkt-name">KFY</div><div class="mkt-sub">Korn Ferry · NYSE</div></div>
+        <div class="mkt-right"><div class="mkt-price" id="p-kfy">—</div><div class="mkt-chg neu" id="c-kfy">—</div></div>
+      </div>
+      <div class="mkt-item">
+        <div class="mkt-left"><div class="mkt-name">Brent Crude</div><div class="mkt-sub">ICE · USD/bbl</div></div>
+        <div class="mkt-right"><div class="mkt-price" id="p-brent">—</div><div class="mkt-chg neu" id="c-brent">—</div></div>
+      </div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:10px;font-family:'IBM Plex Mono',monospace;">
+        ℹ Indices load via Yahoo Finance proxy — may be delayed
+      </div>
+    </div>
+
+    <!-- Crypto -->
+    <div class="mkt-section" id="mkt-crypto">
+      <div class="loading-state"><div class="spinner"></div> Loading crypto…</div>
+    </div>
+
+    <!-- Metals -->
+    <div class="mkt-section" id="mkt-metals">
+      <div class="loading-state"><div class="spinner"></div> Loading metals…</div>
+    </div>
+
+    <div class="mkt-footer">
+      <span class="mkt-updated" id="mkt-ts">Not yet loaded</span>
+    </div>
+  </div>
+
+  <!-- CALENDAR PANEL -->
+  <div class="panel">
+    <div class="panel-title"><span>📅 Upcoming</span></div>
+    <div class="cal-list" id="cal-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════
+//  CLOCK & GREETING
+// ════════════════════════════════
+function tick() {
+  const now = new Date();
+  const p = n => String(n).padStart(2,'0');
+  document.getElementById('clock').textContent =
+    `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+
+  const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dateLine').textContent =
+    `${DAYS[now.getDay()]}  ${now.getDate()} ${MONS[now.getMonth()]} ${now.getFullYear()}`;
+
+  const hr = now.getHours();
+  const g  = hr < 5 ? 'Still up, Çağlar?' : hr < 12 ? 'Good morning, Çağlar' :
+             hr < 17 ? 'Good afternoon, Çağlar' : hr < 21 ? 'Good evening, Çağlar' :
+             'Good night, Çağlar';
+  document.getElementById('greeting').textContent = `✦ ${g}`;
+}
+setInterval(tick, 1000);
+tick();
+
+// ════════════════════════════════
+//  TASK MANAGER
+// ════════════════════════════════
+const activePri = { kf:'high', per:'high', fam:'high' };
+
+function selPri(cat, level) {
+  activePri[cat] = level;
+  const btns = document.querySelectorAll(`#${cat}-pri .pri-btn`);
+  btns.forEach(b => {
+    b.className = 'pri-btn';
+    if (b.textContent.toLowerCase().includes(level.substring(0,3)))
+      b.className = `pri-btn sel-${level}`;
+  });
+}
+
+const LS = {
+  get: cat => JSON.parse(localStorage.getItem(`cmd_tasks_${cat}`) || '[]'),
+  set: (cat, data) => localStorage.setItem(`cmd_tasks_${cat}`, JSON.stringify(data))
+};
+
+function render(cat) {
+  const tasks = LS.get(cat);
+  const done  = tasks.filter(t => t.done).length;
+  const pct   = tasks.length ? Math.round(done / tasks.length * 100) : 0;
+
+  document.getElementById(`${cat}-count`).textContent = `${done} / ${tasks.length}`;
+  document.getElementById(`${cat}-pct`).textContent   = `${pct}%`;
+  document.getElementById(`${cat}-bar`).style.width   = pct + '%';
+
+  const ul = document.getElementById(`${cat}-list`);
+  ul.innerHTML = '';
+
+  tasks.forEach((t, i) => {
+    const li = document.createElement('li');
+    li.className = 'task-item' + (t.done ? ' done' : '');
+    li.innerHTML = `
+      <div class="cb" onclick="toggle('${cat}',${i})">
+        <svg class="cb-check" width="10" height="8" viewBox="0 0 10 8">
+          <path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="dot dot-${t.pri || 'med'}"></div>
+      <span class="task-text" contenteditable="true"
+        onblur="editT('${cat}',${i},this)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+      >${escHtml(t.text)}</span>
+      <button class="task-del" onclick="delT('${cat}',${i})">×</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addTask(cat) {
+  const inp = document.getElementById(`${cat}-inp`);
+  const text = inp.value.trim();
+  if (!text) return;
+  const t = LS.get(cat);
+  t.push({ text, done: false, pri: activePri[cat] });
+  LS.set(cat, t);
+  inp.value = '';
+  render(cat);
+}
+
+function toggle(cat, i) {
+  const t = LS.get(cat);
+  t[i].done = !t[i].done;
+  LS.set(cat, t);
+  render(cat);
+}
+
+function delT(cat, i) {
+  const t = LS.get(cat);
+  t.splice(i, 1);
+  LS.set(cat, t);
+  render(cat);
+}
+
+function editT(cat, i, el) {
+  const t = LS.get(cat);
+  const text = el.innerText.trim();
+  if (text) { t[i].text = text; LS.set(cat, t); }
+  else { t.splice(i,1); LS.set(cat,t); render(cat); }
+}
+
+// Default tasks (only if none saved)
+function seed() {
+  if (!localStorage.getItem('cmd_tasks_kf')) {
+    LS.set('kf', [
+      { text: 'UAE entity restructuring SWOT deck', done: false, pri: 'high' },
+      { text: 'Azerbaijan March payroll reconciliation', done: false, pri: 'high' },
+      { text: 'Kuwait PE DMTT review with Alok', done: false, pri: 'med' },
+      { text: 'SAP → D365 BC AR migration sign-off', done: false, pri: 'med' },
+      { text: 'Finance Knowledgebase — labour law PDFs', done: false, pri: 'low' },
+      { text: 'MENA accruals Q2 review', done: false, pri: 'low' },
+    ]);
+  }
+  if (!localStorage.getItem('cmd_tasks_per')) {
+    LS.set('per', [
+      { text: 'IELTS for UKVI B2 — register', done: false, pri: 'high' },
+      { text: 'Life in the UK Test booking', done: false, pri: 'high' },
+      { text: 'ILR timeline prep (target Sep 2027)', done: false, pri: 'med' },
+      { text: 'GP appointment — skin allergy follow-up', done: false, pri: 'med' },
+    ]);
+  }
+  if (!localStorage.getItem('cmd_tasks_fam')) {
+    LS.set('fam', [
+      { text: 'Ece passport renewal 🇹🇷 (expires soon)', done: false, pri: 'high' },
+      { text: 'Ela passport renewal 🇹🇷', done: false, pri: 'high' },
+      { text: 'Gonul — ACAS EC submission (July deadline)', done: false, pri: 'high' },
+      { text: 'Garden: grape vine trellis fix', done: false, pri: 'low' },
+    ]);
+  }
+}
+
+seed();
+['kf','per','fam'].forEach(render);
+
+// ════════════════════════════════
+//  NEWS FEEDS
+// ════════════════════════════════
+const RSS_BASE = 'https://api.rss2json.com/v1/api.json';
+const FEEDS = {
+  uk:   'https://feeds.bbci.co.uk/news/rss.xml',
+  tr:   'https://www.dailysabah.com/rssFeed/front-page',
+  me:   'https://www.aljazeera.com/xml/rss/all.xml',
+  gala: 'https://www.fanatik.com.tr/rss',
+  epl:  'https://www.bbc.co.uk/sport/football/premier-league/rss.xml',
+};
+
+const fetched = {};
+let activeFeed = 'uk';
+
+async function loadFeed(cat) {
+  if (fetched[cat]) return;
+  const el = document.getElementById(`feed-${cat}`);
+  el.innerHTML = '<div class="loading-state"><div class="spinner"></div> Loading…</div>';
+
+  try {
+    const url = `${RSS_BASE}?rss_url=${encodeURIComponent(FEEDS[cat])}&count=10`;
+    const r   = await fetch(url);
+    const d   = await r.json();
+    if (d.status !== 'ok' || !d.items?.length) throw new Error('empty');
+
+    el.innerHTML = d.items.slice(0,10).map(item => {
+      const dt = item.pubDate
+        ? new Date(item.pubDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+        : '';
+      return `<div class="news-item">
+        <a href="${item.link}" target="_blank" rel="noopener">${item.title}</a>
+        <div class="news-meta">${dt}</div>
+      </div>`;
+    }).join('');
+    fetched[cat] = true;
+  } catch {
+    el.innerHTML = `<div class="err-state">⚠ Feed unavailable — <a href="#" onclick="delete fetched['${cat}'];loadFeed('${cat}');return false" style="color:var(--teal)">retry</a></div>`;
+  }
+}
+
+function switchFeed(cat, btn) {
+  document.querySelectorAll('#news-tabs .tab-btn').forEach(b => b.className = 'tab-btn');
+  document.querySelectorAll('.feed').forEach(f => f.classList.remove('active'));
+  btn.className = 'tab-btn active-teal';
+  document.getElementById(`feed-${cat}`).classList.add('active');
+  activeFeed = cat;
+  loadFeed(cat);
+}
+
+function reloadCurrentFeed() {
+  delete fetched[activeFeed];
+  loadFeed(activeFeed);
+}
+
+loadFeed('uk');
+
+// ════════════════════════════════
+//  MARKETS
+// ════════════════════════════════
+let activeMkt = 'fx';
+
+function switchMkt(cat, btn) {
+  document.querySelectorAll('.tabs button[onclick*="switchMkt"]').forEach(b => b.className = 'tab-btn');
+  document.querySelectorAll('.mkt-section').forEach(s => s.classList.remove('active'));
+  btn.className = 'tab-btn active-gold';
+  document.getElementById(`mkt-${cat}`).classList.add('active');
+  activeMkt = cat;
+}
+
+// FX via open.er-api.com (free, no key, CORS OK)
+async function loadFX() {
+  const el = document.getElementById('mkt-fx');
+  try {
+    const [rG, rT] = await Promise.all([
+      fetch('https://open.er-api.com/v6/latest/GBP'),
+      fetch('https://open.er-api.com/v6/latest/USD'),
+    ]);
+    const gbp = await rG.json();
+    const usd = await rT.json();
+    const r   = gbp.rates;
+    const ru  = usd.rates;
+
+    const fmt = (n, dp=4) => n ? n.toFixed(dp) : '—';
+
+    el.innerHTML = `
+      <div style="font-size:9px;letter-spacing:1.5px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;margin-bottom:6px;text-transform:uppercase;">GBP Pairs</div>
+      ${row('GBP/USD','',    fmt(r['USD']))}
+      ${row('GBP/EUR','',    fmt(r['EUR']))}
+      ${row('GBP/TRY','',    fmt(r['TRY'],2))}
+      ${row('GBP/AED','',    fmt(r['AED']))}
+      ${row('GBP/AZN','',    fmt(r['AZN']))}
+      ${row('GBP/KWD','',    fmt(r['KWD']))}
+      <div style="font-size:9px;letter-spacing:1.5px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;margin:10px 0 6px;text-transform:uppercase;">TRY Pairs</div>
+      ${row('USD/TRY','',    fmt(ru['TRY'],2))}
+      ${row('EUR/TRY','',    fmt(ru['TRY'] / ru['EUR'],2))}
+      ${row('GBP/TRY','',    fmt(r['TRY'],2))}
+    `;
+  } catch {
+    el.innerHTML = '<div class="err-state">⚠ FX unavailable</div>';
+  }
+}
+
+function row(name, sub, price, chg, dir) {
+  return `<div class="mkt-item">
+    <div class="mkt-left"><div class="mkt-name">${name}</div>${sub?`<div class="mkt-sub">${sub}</div>`:''}</div>
+    <div class="mkt-right">
+      <div class="mkt-price">${price || '—'}</div>
+      ${chg ? `<div class="mkt-chg ${dir||'neu'}">${chg}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+// Crypto via CoinGecko (free, no key, CORS OK)
+async function loadCrypto() {
+  const el = document.getElementById('mkt-crypto');
+  try {
+    const r = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd,gbp&include_24hr_change=true'
+    );
+    const d = await r.json();
+
+    const coins = [
+      { id:'bitcoin',  sym:'BTC', name:'Bitcoin'  },
+      { id:'ethereum', sym:'ETH', name:'Ethereum' },
+      { id:'solana',   sym:'SOL', name:'Solana'   },
+    ];
+
+    el.innerHTML = coins.map(c => {
+      const item = d[c.id];
+      if (!item) return '';
+      const price = item.usd >= 1000
+        ? '$' + item.usd.toLocaleString('en-US',{maximumFractionDigits:0})
+        : '$' + item.usd.toFixed(2);
+      const chg   = item.usd_24h_change?.toFixed(2);
+      const dir   = chg >= 0 ? 'up' : 'down';
+      return row(c.sym, c.name, price, (chg>=0?'+':'')+chg+'%', dir);
+    }).join('');
+  } catch {
+    el.innerHTML = '<div class="err-state">⚠ Crypto unavailable</div>';
+  }
+}
+
+// Metals via open.er-api.com XAU/XAG
+async function loadMetals() {
+  const el = document.getElementById('mkt-metals');
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+    const xau = d.rates['XAU'];
+    const xag = d.rates['XAG'];
+
+    let html = '';
+    if (xau) html += row('Gold',  'XAU/USD', '$' + (1/xau).toLocaleString('en-US',{maximumFractionDigits:2}));
+    if (xag) html += row('Silver','XAG/USD', '$' + (1/xag).toFixed(2));
+    html += row('Brent Crude','ICE · USD/bbl', '—','via broker','neu');
+    el.innerHTML = html || '<div class="err-state">⚠ No data</div>';
+  } catch {
+    el.innerHTML = '<div class="err-state">⚠ Metals unavailable</div>';
+  }
+}
+
+// Indices via allorigins + Yahoo Finance
+async function loadIndex(sym, pid, cid) {
+  try {
+    const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=5d`;
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
+    const r = await fetch(proxy);
+    const outer = await r.json();
+    const data  = JSON.parse(outer.contents);
+    const res   = data.chart.result[0];
+    const closes = res.indicators.quote[0].close.filter(Boolean);
+    const last  = closes[closes.length - 1];
+    const prev  = closes[closes.length - 2];
+    const pct   = ((last - prev) / prev * 100).toFixed(2);
+    const dir   = pct >= 0 ? 'up' : 'down';
+    document.getElementById(pid).textContent = last >= 1000
+      ? last.toLocaleString('en-US',{maximumFractionDigits:0})
+      : last.toFixed(2);
+    document.getElementById(cid).textContent = (pct>=0?'+':'')+pct+'%';
+    document.getElementById(cid).className   = `mkt-chg ${dir}`;
+  } catch {
+    document.getElementById(pid).textContent = '—';
+    document.getElementById(cid).textContent = 'unavail';
+  }
+}
+
+async function loadAllMarkets() {
+  await Promise.all([loadFX(), loadCrypto(), loadMetals()]);
+  loadIndex('^FTSE',  'p-ftse',  'c-ftse');
+  loadIndex('^XU100', 'p-bist',  'c-bist');
+  loadIndex('^GSPC',  'p-sp',    'c-sp');
+  loadIndex('^DJI',   'p-dj',    'c-dj');
+  loadIndex('KFY',    'p-kfy',   'c-kfy');
+  loadIndex('BZ=F',   'p-brent', 'c-brent');
+
+  const ts = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('mkt-ts').textContent = `Updated ${ts}`;
+}
+
+loadAllMarkets();
+setInterval(loadAllMarkets, 5 * 60 * 1000);
+
+// ════════════════════════════════
+//  CALENDAR / HOLIDAYS
+// ════════════════════════════════
+const EVENTS = [
+  // ── UK Public Holidays ──
+  { d:'2026-05-25', name:'Spring Bank Holiday',           type:'public' },
+  { d:'2026-08-31', name:'Summer Bank Holiday',           type:'public' },
+  { d:'2026-12-25', name:'Christmas Day',                 type:'public' },
+  { d:'2026-12-28', name:'Boxing Day (substitute)',        type:'public' },
+  { d:'2027-01-01', name:"New Year's Day",                type:'public' },
+  { d:'2027-04-02', name:'Good Friday',                   type:'public' },
+  { d:'2027-04-05', name:'Easter Monday',                 type:'public' },
+  { d:'2027-05-03', name:'Early May Bank Holiday',        type:'public' },
+  { d:'2027-05-31', name:'Spring Bank Holiday',           type:'public' },
+
+  // ── Kingston School Terms ──
+  { d:'2026-05-25', name:'May Half Term starts',          type:'kids',   note:'Ece & Ela off school' },
+  { d:'2026-06-01', name:'School Returns',                type:'school' },
+  { d:'2026-07-22', name:'Summer Holidays Begin',         type:'kids',   note:'~6 weeks off' },
+  { d:'2026-09-03', name:'Back to School — Autumn',       type:'school' },
+  { d:'2026-10-26', name:'October Half Term',             type:'kids',   note:'~1 week' },
+  { d:'2026-11-02', name:'School Returns',                type:'school' },
+  { d:'2026-12-18', name:'Christmas Holidays Begin',      type:'kids',   note:'~2 weeks' },
+  { d:'2027-01-06', name:'Back to School — Spring',       type:'school' },
+  { d:'2027-02-15', name:'February Half Term',            type:'kids',   note:'~1 week' },
+  { d:'2027-02-22', name:'School Returns',                type:'school' },
+  { d:'2027-04-01', name:'Easter Holidays Begin',         type:'kids',   note:'~2 weeks' },
+  { d:'2027-04-19', name:'Back to School — Summer',       type:'school' },
+  { d:'2027-05-28', name:'May Half Term',                 type:'kids' },
+
+  // ── Family ──
+  { d:'2026-07-21', name:'🎂 Ece turns 15',              type:'kids',   note:'Birthday!' },
+  { d:'2026-09-19', name:'🎂 Ela turns 13',              type:'kids',   note:'Birthday — teenage!' },
+
+  // ── Personal deadlines ──
+  { d:'2026-07-05', name:'⚖️ ACAS EC Deadline (Gonul)',  type:'alert',  note:'Employment claim — do not miss' },
+  { d:'2027-09-01', name:'🏠 ILR Target (Çağlar)',       type:'alert',  note:'5-year continuous residence' },
+];
+
+function buildCal() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const MONS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const badge = { public:'badge-public', school:'badge-school', kids:'badge-kids', alert:'badge-alert' };
+  const label = { public:'Public Holiday', school:'School', kids:'Kids / Family', alert:'⚠ Deadline' };
+
+  const list = EVENTS
+    .map(e => ({ ...e, dt: new Date(e.d + 'T00:00:00') }))
+    .filter(e => e.dt >= today)
+    .sort((a,b) => a.dt - b.dt)
+    .slice(0, 22);
+
+  document.getElementById('cal-list').innerHTML = list.map(e => {
+    const diff = Math.round((e.dt - today) / 86400000);
+    let cd, cls;
+    if (diff === 0)   { cd = '🔴 Today';     cls = 'cd-today'; }
+    else if (diff <= 7) { cd = `${diff}d`;   cls = 'cd-soon'; }
+    else              { cd = `${diff}d`;      cls = 'cd-upcoming'; }
+
+    return `<div class="cal-item">
+      <div class="cal-date">
+        <div class="cal-day">${e.dt.getDate()}</div>
+        <div class="cal-mon">${MONS[e.dt.getMonth()]}</div>
+      </div>
+      <div class="cal-info">
+        <div class="cal-name">${e.name}</div>
+        ${e.note ? `<div class="cal-note">${e.note}</div>` : ''}
+        <span class="badge ${badge[e.type]}">${label[e.type]}</span>
+      </div>
+      <div class="cal-countdown ${cls}">${cd}</div>
+    </div>`;
+  }).join('');
+}
+
+buildCal();
+</script>
+</body>
+</html>
