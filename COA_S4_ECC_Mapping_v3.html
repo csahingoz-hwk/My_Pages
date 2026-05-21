@@ -181,7 +181,7 @@ function renderTable() {
     const display = filtered.slice(0, 500);
     document.getElementById('tbody').innerHTML = display.map(r => {
         return '<tr>' + r.map((cell, i) => {
-            let val = cell || '';
+            let val = cell != null ? String(cell) : '';
             if (search && val.toLowerCase().includes(search)) {
                 const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
                 val = val.replace(regex, '<span class="highlight">$1</span>');
@@ -247,7 +247,7 @@ function toggleTree(el) {
 function applyFilters() {
     const search = document.getElementById('search').value.toLowerCase();
     filtered = DATA.filter(r => {
-        const matchSearch = !search || r.some(cell => (cell || '').toLowerCase().includes(search));
+        const matchSearch = !search || r.some(cell => String(cell ?? '').toLowerCase().includes(search));
                 const matchFilter = currentFilter === 'all' || String(r[6]) === currentFilter;
         return matchSearch && matchFilter;
     });
