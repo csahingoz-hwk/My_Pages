@@ -41,7 +41,7 @@ body {
   background-image:
     radial-gradient(ellipse 90% 55% at -5% -5%, rgba(0,99,79,0.10) 0%, transparent 60%),
     radial-gradient(ellipse 70% 50% at 105% 110%, rgba(0,23,59,0.55) 0%, transparent 65%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3Ccircle cx='51' cy='51' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3Ccircle cx='1' cy='51' r='0.6' fill='%23fff' fill-opacity='0.01'/%3E%3Ccircle cx='51' cy='1' r='0.6' fill='%23fff' fill-opacity='0.01'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3Ccircle cx='51' cy='51' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3C/svg%3E");
 }
 
 /* ═══ HEADER ═══ */
@@ -390,10 +390,10 @@ body {
         {"proName":"FX:GBPTRY","title":"GBP/TRY"},
         {"proName":"FX:USDTRY","title":"USD/TRY"},
         {"proName":"FX:EURTRY","title":"EUR/TRY"},
-        {"proName":"SPREADEX:UK100","title":"FTSE 100"},
+        {"proName":"FOREXCOM:UK100","title":"FTSE 100"},
         {"proName":"BIST:XU100","title":"BIST 100"},
-        {"proName":"SP:SPX","title":"S&P 500"},
-        {"proName":"DJ:DJI","title":"DOW 30"},
+        {"proName":"FOREXCOM:SPXUSD","title":"S&P 500"},
+        {"proName":"FOREXCOM:DJI","title":"DOW 30"},
         {"proName":"NYSE:KFY","title":"KFY"},
         {"proName":"TVC:GOLD","title":"Gold"},
         {"proName":"TVC:SILVER","title":"Silver"},
@@ -568,8 +568,8 @@ body {
             "width":"100%","height":"520","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,
             "tabs":[
               {"title":"Indices","symbols":[
-                {"s":"SPREADEX:UK100","d":"FTSE 100"},{"s":"BIST:XU100","d":"BIST 100"},
-                {"s":"SP:SPX","d":"S&P 500"},{"s":"DJ:DJI","d":"Dow Jones"},
+                {"s":"FOREXCOM:UK100","d":"FTSE 100"},{"s":"BIST:XU100","d":"BIST 100"},
+                {"s":"FOREXCOM:SPXUSD","d":"S&P 500"},{"s":"FOREXCOM:DJI","d":"Dow Jones"},
                 {"s":"NYSE:KFY","d":"Korn Ferry"}
               ]},
               {"title":"Commodities & Crypto","symbols":[
@@ -785,7 +785,7 @@ async function fetchNews() {
         tools:[{ type:'web_search_20250305', name:'web_search' }],
         messages:[{
           role:'user',
-          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure exactly:\n{"uk":[{"title":"...","summary":"one clear sentence","source":"...","time":"X hours ago"}],"turkey":[same],"mideast":[same],"sports":[same]}\nuk: top 8 UK news stories. turkey: top 6 Turkish news (in English). mideast: top 6 Middle East news. sports: top 6 mixing Galatasaray SK and English Premier League results/news. Use real current news from the web. Return ONLY the JSON object, nothing else.'
+          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure: {"uk": [{title, source, time, summary}], "turkey": [...], "mideast": [...], "sports": [...]}. Fetch 3 items per category.'
         }]
       })
     });
