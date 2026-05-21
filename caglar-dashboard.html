@@ -665,8 +665,8 @@ async function fetchTRY() {
     card.innerHTML = pairs.map(function(p) {
       return '<div style="background:rgba(0,23,59,0.5);border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:14px 16px;text-align:center;">' +
         '<div style="font-size:18px;margin-bottom:6px;">' + p.flag + '</div>' +
-        '<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(212,197,160,0.5);letter-spacing:.1em;margin-bottom:4px;">' + p.label + '</div>' +
-        '<div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:#C9A84C;font-weight:500;">' + p.val + '</div>' +
+        '<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:rgba(212,197,160,0.5);letter-spacing:.1em;margin-bottom:4px;">' + p.label + '</div>' +
+        '<div style="font-family:\'Share Tech Mono\',monospace;font-size:18px;color:#C9A84C;font-weight:500;">' + p.val + '</div>' +
       '</div>';
     }).join('');
  
@@ -836,7 +836,7 @@ async function fetchNews() {
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens: 4000,
         tools:[{ type:'web_search_20250305', name:'web_search' }],
         messages:[{
