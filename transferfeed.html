@@ -681,7 +681,7 @@
           'anthropic-dangerous-direct-browser-access': 'true'
         },
         body   : JSON.stringify({
-          model     : 'claude-haiku-4-5-20251001',
+          model     : 'claude-sonnet-4-6',
           max_tokens: 4000,
           system    : 'You are a football transfer journalist. Always reply with ONLY a valid JSON array — no prose, no markdown fences.',
           tools,
@@ -875,12 +875,14 @@ Managers: Okan Buruk (GS), Arne Slot (LFC). Players must be real current footbal
       return;
     }
 
-    // Save key on change; auto-load once valid
-    input.addEventListener('input', () => {
-      const val = input.value.trim();
-      if (val.startsWith('sk-ant-')) {
-        localStorage.setItem('transferhub_apikey', val);
-        loadNews();
+    // Save on Enter key
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = input.value.trim();
+        if (val) {
+          localStorage.setItem('transferhub_apikey', val);
+          loadNews();
+        }
       }
     });
 
