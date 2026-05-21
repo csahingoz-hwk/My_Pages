@@ -27,10 +27,10 @@
   --border2: rgba(255,255,255,0.06);
   --border3: rgba(255,255,255,0.03);
 }
-
+ 
 *,*::before,*::after { box-sizing: border-box; margin:0; padding:0; }
 html { scroll-behavior: smooth; }
-
+ 
 body {
   font-family: 'Jost', sans-serif;
   font-size: 14px;
@@ -41,9 +41,9 @@ body {
   background-image:
     radial-gradient(ellipse 90% 55% at -5% -5%, rgba(0,99,79,0.10) 0%, transparent 60%),
     radial-gradient(ellipse 70% 50% at 105% 110%, rgba(0,23,59,0.55) 0%, transparent 65%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3Ccircle cx='51' cy='51' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3Ccircle cx='51' cy='51' r='0.8' fill='%23fff' fill-opacity='0.016'/%3E%3Ccircle cx='1' cy='51' r='0.6' fill='%23fff' fill-opacity='0.01'/%3E%3Ccircle cx='51' cy='1' r='0.6' fill='%23fff' fill-opacity='0.01'/%3E%3C/svg%3E");
 }
-
+ 
 /* ═══ HEADER ═══ */
 .hdr {
   position: sticky; top:0; z-index:200;
@@ -55,7 +55,7 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px; gap: 20px;
 }
-
+ 
 .brand { display:flex; align-items:center; gap:11px; flex-shrink:0; }
 .brand-hex {
   width:34px; height:34px; border-radius:9px;
@@ -69,7 +69,7 @@ body {
   font-size:19px; font-weight:600; color:var(--gold); letter-spacing:.06em; line-height:1;
 }
 .brand-sub { font-size:10px; color:var(--muted); letter-spacing:.2em; text-transform:uppercase; margin-top:2px; }
-
+ 
 .hnav { display:flex; gap:2px; flex:1; justify-content:center; }
 .hnav button {
   background:transparent; border:none; border-radius:7px;
@@ -77,7 +77,7 @@ body {
   padding:6px 15px; cursor:pointer; letter-spacing:.03em; transition:color .2s,background .2s;
 }
 .hnav button:hover { color:var(--text); background:var(--border2); }
-
+ 
 .hright { display:flex; align-items:center; gap:14px; flex-shrink:0; }
 .hclock { text-align:right; }
 .clock { font-family:'Share Tech Mono',monospace; font-size:18px; color:var(--gold); line-height:1; }
@@ -89,20 +89,20 @@ body {
   display:flex; align-items:center; justify-content:center; transition:all .2s;
 }
 .iconbtn:hover { color:var(--gold); border-color:var(--border); background:var(--border3); }
-
+ 
 /* ═══ TICKER ═══ */
 .ticker-wrap {
   border-bottom:1px solid var(--border2);
   background:rgba(0,23,59,0.25);
 }
-
+ 
 /* ═══ MAIN ═══ */
 .main {
   max-width:1720px; margin:0 auto;
   padding:30px 24px 90px;
   display:flex; flex-direction:column; gap:38px;
 }
-
+ 
 /* ═══ SECTION ═══ */
 .sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:18px; }
 .sec-eye {
@@ -110,7 +110,7 @@ body {
   color:var(--gold); margin-bottom:5px; font-family:'Jost',sans-serif;
 }
 .sec-ttl { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:500; color:var(--text); line-height:1; }
-
+ 
 /* ═══ CARD ═══ */
 .card {
   background:var(--card);
@@ -128,12 +128,12 @@ body {
   opacity:0; transition:opacity .3s;
 }
 .card:hover::after { opacity:1; }
-
+ 
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
+ 
 /* ═══ TASKS ═══ */
 .tgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-
+ 
 .th { display:flex; align-items:center; justify-content:space-between; margin-bottom:13px; }
 .ttl { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--text); }
 .tcnt {
@@ -141,15 +141,15 @@ body {
   background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.16);
   border-radius:20px; padding:2px 10px;
 }
-
+ 
 .prog-row { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:5px; font-family:'Share Tech Mono',monospace; }
 .prog-track { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; margin-bottom:15px; }
 .prog-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--gold),var(--gold2)); transition:width .6s cubic-bezier(.4,0,.2,1); }
-
+ 
 .tlist { list-style:none; display:flex; flex-direction:column; gap:5px; max-height:290px; overflow-y:auto; padding-right:2px; margin-bottom:13px; }
 .tlist::-webkit-scrollbar { width:2px; }
 .tlist::-webkit-scrollbar-thumb { background:var(--border); border-radius:1px; }
-
+ 
 .ti {
   display:flex; align-items:center; gap:9px;
   padding:9px 11px; background:var(--border3);
@@ -158,7 +158,7 @@ body {
 }
 .ti:hover { background:rgba(255,255,255,0.04); border-color:rgba(201,168,76,0.14); }
 .ti.done { opacity:.5; }
-
+ 
 .tcb {
   width:17px; height:17px; flex-shrink:0;
   border:1.5px solid var(--muted); border-radius:4px;
@@ -166,7 +166,7 @@ body {
   font-size:10px; color:transparent; transition:all .18s; background:transparent; user-select:none;
 }
 .ti.done .tcb { background:var(--green); border-color:var(--green); color:#000; }
-
+ 
 .tlb {
   flex:1; min-width:0;
   font-size:13px; color:var(--text2); outline:none; background:transparent; border:none;
@@ -175,12 +175,12 @@ body {
 }
 .tlb:focus { white-space:normal; overflow:visible; text-overflow:unset; color:var(--gold2); }
 .ti.done .tlb { text-decoration:line-through; color:var(--muted); }
-
+ 
 .pri { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:2px 6px; border-radius:3px; flex-shrink:0; font-family:'Jost',sans-serif; }
 .pri.high { background:rgba(255,77,109,.12); color:var(--red); }
 .pri.med  { background:rgba(255,185,48,.12); color:var(--amber); }
 .pri.low  { background:rgba(0,205,151,.12); color:var(--green); }
-
+ 
 .tdel {
   flex-shrink:0; width:20px; height:20px; background:transparent; border:none;
   color:transparent; cursor:pointer; font-size:12px; border-radius:4px;
@@ -188,7 +188,7 @@ body {
 }
 .ti:hover .tdel { color:var(--muted); }
 .tdel:hover { color:var(--red) !important; background:rgba(255,77,109,.1); }
-
+ 
 .tadd { display:flex; gap:6px; align-items:center; }
 .tinp {
   flex:1; min-width:0; background:rgba(255,255,255,0.03);
@@ -198,27 +198,27 @@ body {
 }
 .tinp:focus { border-color:rgba(201,168,76,.35); }
 .tinp::placeholder { color:var(--muted); }
-
+ 
 .psel {
   background:rgba(255,255,255,0.03); border:1px solid var(--border2); border-radius:8px;
   padding:8px 5px; font-size:13px; color:var(--text); cursor:pointer; outline:none; width:42px;
 }
 .psel option { background:#021530; }
-
+ 
 .addbtn {
   background:rgba(201,168,76,.09); border:1px solid rgba(201,168,76,.22); color:var(--gold);
   border-radius:8px; padding:8px 14px; font-family:'Jost',sans-serif; font-size:13px; font-weight:600;
   cursor:pointer; transition:all .18s; white-space:nowrap;
 }
 .addbtn:hover { background:rgba(201,168,76,.18); border-color:rgba(201,168,76,.4); }
-
+ 
 .clearbtn {
   margin-top:8px; float:right; font-size:11px; background:transparent; border:none;
   color:var(--muted); cursor:pointer; text-decoration:underline; font-family:'Jost',sans-serif; transition:color .2s;
 }
 .clearbtn:hover { color:var(--red); }
 .clearfix::after { content:''; display:table; clear:both; }
-
+ 
 /* ═══ NEWS ═══ */
 .ntabs { display:flex; gap:1px; border-bottom:1px solid var(--border2); margin-bottom:18px; flex-wrap:wrap; }
 .ntab {
@@ -228,10 +228,10 @@ body {
 }
 .ntab:hover { color:var(--text2); }
 .ntab.on { color:var(--gold); border-bottom-color:var(--gold); }
-
+ 
 .npanel { display:none; }
 .npanel.on { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:11px; }
-
+ 
 .ncard {
   background:rgba(255,255,255,0.025); border:1px solid var(--border2); border-radius:11px;
   padding:14px 16px; transition:all .18s; display:flex; flex-direction:column; gap:8px;
@@ -242,15 +242,15 @@ body {
 .ntime { font-size:10px; color:var(--muted); margin-left:auto; }
 .ntitle { font-size:13.5px; font-weight:500; line-height:1.5; color:var(--text); }
 .nsum { font-size:12px; color:var(--text2); line-height:1.65; opacity:.75; }
-
+ 
 .nempty { grid-column:1/-1; text-align:center; padding:52px 20px; color:var(--muted); }
 .nempty p { margin-bottom:6px; }
 .nempty strong { color:var(--text2); }
-
+ 
 .nload { grid-column:1/-1; display:flex; flex-direction:column; align-items:center; gap:16px; padding:56px 20px; color:var(--muted); font-size:13px; }
 .spin { width:28px; height:28px; border:2px solid var(--border2); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
-
+ 
 .nctrl { display:flex; align-items:center; gap:12px; }
 .nts { font-size:11px; color:var(--muted); font-family:'Share Tech Mono',monospace; }
 .rfbtn {
@@ -260,7 +260,7 @@ body {
 }
 .rfbtn:hover { background:rgba(0,99,79,.25); }
 .rfbtn:disabled { opacity:.38; cursor:not-allowed; }
-
+ 
 /* ═══ MARKETS ═══ */
 .mgrid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 .mwrap { border:1px solid var(--border2); border-radius:15px; overflow:hidden; background:rgba(0,23,59,.28); }
@@ -269,17 +269,17 @@ body {
   letter-spacing:.2em; text-transform:uppercase; border-bottom:1px solid var(--border2);
   background:rgba(0,23,59,.45); font-family:'Jost',sans-serif;
 }
-
+ 
 /* ═══ CALENDAR ═══ */
 .egrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:10px; }
-
+ 
 .eitem {
   display:flex; align-items:center; gap:14px;
   padding:12px 15px; background:rgba(255,255,255,0.024);
   border:1px solid var(--border2); border-radius:11px; transition:all .18s;
 }
 .eitem:hover { background:rgba(255,255,255,0.04); border-color:var(--border); }
-
+ 
 .edate {
   width:50px; height:50px; border-radius:10px;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -290,19 +290,19 @@ body {
 .edate.term    { background:rgba(201,168,76,.1);   border:1px solid rgba(201,168,76,.26); }
 .edate.bday    { background:rgba(180,80,255,.1);   border:1px solid rgba(180,80,255,.26); }
 .edate.kf      { background:rgba(0,99,79,.12);     border:1px solid rgba(0,99,79,.35); }
-
+ 
 .edd  { font-size:22px; font-weight:700; color:var(--text); line-height:1; }
 .emm  { font-size:9px; color:var(--muted); letter-spacing:.13em; text-transform:uppercase; margin-top:2px; }
-
+ 
 .einfo { flex:1; min-width:0; }
 .etitle { font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px; }
 .esub   { font-size:11px; color:var(--muted); }
-
+ 
 .echip { font-family:'Share Tech Mono',monospace; font-size:11px; padding:3px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
 .echip.today { background:rgba(255,77,109,.14);  color:var(--red); font-weight:700; }
 .echip.near  { background:rgba(255,185,48,.12);  color:var(--amber); }
 .echip.far   { background:rgba(255,255,255,.05); color:var(--muted); }
-
+ 
 /* ═══ MODAL ═══ */
 .overlay {
   display:none; position:fixed; inset:0;
@@ -339,19 +339,19 @@ body {
   padding:11px 24px; font-family:'Jost',sans-serif; font-size:14px; cursor:pointer; transition:all .2s;
 }
 .btns:hover { color:var(--text); border-color:var(--text2); }
-
+ 
 /* ═══ SCROLLBAR ═══ */
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.09); border-radius:3px; }
-
+ 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:1140px) { .tgrid { grid-template-columns:1fr 1fr; } .mgrid { grid-template-columns:1fr; } }
 @media(max-width:740px)  { .tgrid { grid-template-columns:1fr; } .hnav { display:none; } .main { padding:16px 14px 60px; } .npanel.on { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
-
+ 
 <!-- ═══ HEADER ═══ -->
 <header class="hdr">
   <div class="brand">
@@ -361,14 +361,14 @@ body {
       <div class="brand-sub">Çağlar's Dashboard</div>
     </div>
   </div>
-
+ 
   <nav class="hnav">
     <button onclick="jumpTo('s-tasks')">✦ Tasks</button>
     <button onclick="jumpTo('s-news')">◈ News</button>
     <button onclick="jumpTo('s-markets')">◆ Markets</button>
     <button onclick="jumpTo('s-calendar')">◇ Calendar</button>
   </nav>
-
+ 
   <div class="hright">
     <div class="hclock">
       <div class="clock" id="clk">00:00:00</div>
@@ -377,7 +377,7 @@ body {
     <button class="iconbtn" title="Settings" onclick="openModal()">⚙</button>
   </div>
 </header>
-
+ 
 <!-- ═══ LIVE TICKER ═══ -->
 <div class="ticker-wrap">
   <div class="tradingview-widget-container">
@@ -387,11 +387,8 @@ body {
       "symbols":[
         {"proName":"FX:GBPUSD","title":"GBP/USD"},
         {"proName":"FX:GBPEUR","title":"GBP/EUR"},
-        {"proName":"FX:GBPTRY","title":"GBP/TRY"},
-        {"proName":"FX:USDTRY","title":"USD/TRY"},
-        {"proName":"FX:EURTRY","title":"EUR/TRY"},
+        {"proName":"FX:EURUSD","title":"EUR/USD"},
         {"proName":"FOREXCOM:UK100","title":"FTSE 100"},
-        {"proName":"BIST:XU100","title":"BIST 100"},
         {"proName":"FOREXCOM:SPXUSD","title":"S&P 500"},
         {"proName":"FOREXCOM:DJI","title":"DOW 30"},
         {"proName":"NYSE:KFY","title":"KFY"},
@@ -409,10 +406,10 @@ body {
     </script>
   </div>
 </div>
-
+ 
 <!-- ═══ MAIN ═══ -->
 <main class="main">
-
+ 
   <!-- ── TASKS ── -->
   <section id="s-tasks">
     <div class="sec-head">
@@ -422,7 +419,7 @@ body {
       </div>
     </div>
     <div class="tgrid">
-
+ 
       <!-- KF -->
       <div class="card" style="animation-delay:.0s">
         <div class="th">
@@ -443,7 +440,7 @@ body {
           <button class="clearbtn" onclick="clearDone('kf')">Clear done</button>
         </div>
       </div>
-
+ 
       <!-- Personal -->
       <div class="card" style="animation-delay:.08s">
         <div class="th">
@@ -464,7 +461,7 @@ body {
           <button class="clearbtn" onclick="clearDone('personal')">Clear done</button>
         </div>
       </div>
-
+ 
       <!-- Family -->
       <div class="card" style="animation-delay:.16s">
         <div class="th">
@@ -485,10 +482,10 @@ body {
           <button class="clearbtn" onclick="clearDone('family')">Clear done</button>
         </div>
       </div>
-
+ 
     </div>
   </section>
-
+ 
   <!-- ── NEWS ── -->
   <section id="s-news">
     <div class="sec-head">
@@ -519,7 +516,7 @@ body {
       <div id="np-sports"  class="npanel"><div class="nempty"><p>📰 Click <strong>Refresh News</strong> to load today's headlines.</p></div></div>
     </div>
   </section>
-
+ 
   <!-- ── MARKETS ── -->
   <section id="s-markets">
     <div class="sec-head">
@@ -529,7 +526,7 @@ body {
       </div>
     </div>
     <div class="mgrid">
-
+ 
       <!-- FX -->
       <div class="mwrap">
         <div class="mlabel">💱 FX Currencies</div>
@@ -542,21 +539,20 @@ body {
             "tabs":[
               {"title":"GBP Pairs","symbols":[
                 {"s":"FX:GBPUSD","d":"GBP / USD"},{"s":"FX:GBPEUR","d":"GBP / EUR"},
-                {"s":"FX:GBPTRY","d":"GBP / TRY"},{"s":"FX:GBPJPY","d":"GBP / JPY"},
-                {"s":"FX:GBPCHF","d":"GBP / CHF"},{"s":"FX:GBPAUD","d":"GBP / AUD"},
-                {"s":"FX:GBPCAD","d":"GBP / CAD"}
+                {"s":"FX:GBPJPY","d":"GBP / JPY"},{"s":"FX:GBPCHF","d":"GBP / CHF"},
+                {"s":"FX:GBPAUD","d":"GBP / AUD"},{"s":"FX:GBPCAD","d":"GBP / CAD"}
               ]},
-              {"title":"TRY Pairs","symbols":[
-                {"s":"FX:USDTRY","d":"USD / TRY"},{"s":"FX:EURTRY","d":"EUR / TRY"},
-                {"s":"FX:GBPTRY","d":"GBP / TRY"},{"s":"FX:CHFTRY","d":"CHF / TRY"},
-                {"s":"FX:JPYTRY","d":"JPY / TRY"}
+              {"title":"Major Pairs","symbols":[
+                {"s":"FX:EURUSD","d":"EUR / USD"},{"s":"FX:USDJPY","d":"USD / JPY"},
+                {"s":"FX:USDCHF","d":"USD / CHF"},{"s":"FX:AUDUSD","d":"AUD / USD"},
+                {"s":"FX:USDCAD","d":"USD / CAD"}
               ]}
             ]
           }
           </script>
         </div>
       </div>
-
+ 
       <!-- Indices + Commodities -->
       <div class="mwrap">
         <div class="mlabel">📊 Indices & Assets</div>
@@ -568,8 +564,8 @@ body {
             "width":"100%","height":"520","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,
             "tabs":[
               {"title":"Indices","symbols":[
-                {"s":"FOREXCOM:UK100","d":"FTSE 100"},{"s":"BIST:XU100","d":"BIST 100"},
-                {"s":"FOREXCOM:SPXUSD","d":"S&P 500"},{"s":"FOREXCOM:DJI","d":"Dow Jones"},
+                {"s":"FOREXCOM:UK100","d":"FTSE 100"},{"s":"FOREXCOM:SPXUSD","d":"S&P 500"},
+                {"s":"FOREXCOM:DJI","d":"Dow Jones"},{"s":"FOREXCOM:NAS100","d":"NASDAQ 100"},
                 {"s":"NYSE:KFY","d":"Korn Ferry"}
               ]},
               {"title":"Commodities & Crypto","symbols":[
@@ -581,10 +577,19 @@ body {
           </script>
         </div>
       </div>
-
+ 
+      <!-- TRY Rates + BIST card -->
+      <div class="mwrap" style="grid-column:1/-1">
+        <div class="mlabel">🇹🇷 Turkish Markets — Live Rates</div>
+        <div id="try-card" style="padding:18px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
+          <div style="text-align:center;color:rgba(212,197,160,0.4);font-family:'Share Tech Mono',monospace;font-size:12px;padding:20px;">Loading...</div>
+        </div>
+        <div style="padding:4px 24px 14px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(212,197,160,0.3);" id="try-ts">—</div>
+      </div>
+ 
     </div>
   </section>
-
+ 
   <!-- ── CALENDAR ── -->
   <section id="s-calendar">
     <div class="sec-head">
@@ -597,9 +602,9 @@ body {
       <div class="egrid" id="egrid"></div>
     </div>
   </section>
-
+ 
 </main>
-
+ 
 <!-- ═══ SETTINGS MODAL ═══ -->
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -619,25 +624,76 @@ body {
     </div>
   </div>
 </div>
-
+ 
 <!-- ═══ SCRIPTS ═══ -->
 <script>
 'use strict';
-
+ 
 /* ── CLOCK ── */
+ 
+// ── TRY Rates & BIST 100 ──────────────────────────────────────────
+async function fetchTRY() {
+  var card = document.getElementById('try-card');
+  var ts   = document.getElementById('try-ts');
+  try {
+    // Free currency API - no key needed
+    var res  = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/try.json');
+    var data = await res.json();
+    var r    = data.try;
+ 
+    // BIST 100 via Yahoo Finance proxy
+    var bistVal = '—';
+    try {
+      var bres = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EXTI100?interval=1d&range=1d', {mode:'cors'});
+      if (bres.ok) {
+        var bdata = await bres.json();
+        var price = bdata?.chart?.result?.[0]?.meta?.regularMarketPrice;
+        if (price) bistVal = price.toLocaleString('en-GB', {maximumFractionDigits:0});
+      }
+    } catch(e) {}
+ 
+    var pairs = [
+      { label:'USD / TRY', val: r.usd ? (1/r.usd).toFixed(2) : '—', flag:'🇺🇸' },
+      { label:'EUR / TRY', val: r.eur ? (1/r.eur).toFixed(2) : '—', flag:'🇪🇺' },
+      { label:'GBP / TRY', val: r.gbp ? (1/r.gbp).toFixed(2) : '—', flag:'🇬🇧' },
+      { label:'CHF / TRY', val: r.chf ? (1/r.chf).toFixed(2) : '—', flag:'🇨🇭' },
+      { label:'JPY / TRY', val: r.jpy ? (1/r.jpy).toFixed(4) : '—', flag:'🇯🇵' },
+      { label:'AED / TRY', val: r.aed ? (1/r.aed).toFixed(2) : '—', flag:'🇦🇪' },
+      { label:'BIST 100',  val: bistVal,                              flag:'📈' }
+    ];
+ 
+    card.innerHTML = pairs.map(function(p) {
+      return '<div style="background:rgba(0,23,59,0.5);border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:14px 16px;text-align:center;">' +
+        '<div style="font-size:18px;margin-bottom:6px;">' + p.flag + '</div>' +
+        '<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(212,197,160,0.5);letter-spacing:.1em;margin-bottom:4px;">' + p.label + '</div>' +
+        '<div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:#C9A84C;font-weight:500;">' + p.val + '</div>' +
+      '</div>';
+    }).join('');
+ 
+    var now = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    ts.textContent = 'Updated ' + now + ' · Source: fawazahmed0/currency-api (ECB rates)';
+ 
+  } catch(e) {
+    card.innerHTML = '<div style="color:rgba(212,197,160,0.4);font-size:12px;padding:16px;">Could not load TRY rates: ' + e.message + '</div>';
+  }
+}
+ 
+fetchTRY();
+setInterval(fetchTRY, 5 * 60 * 1000); // refresh every 5 minutes
+ 
 function tick() {
   var now = new Date();
   document.getElementById('clk').textContent = now.toLocaleTimeString('en-GB',{hour12:false});
   document.getElementById('dstr').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
 tick(); setInterval(tick, 1000);
-
+ 
 /* ── NAV ── */
 function jumpTo(id) {
   var el = document.getElementById(id);
   if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
+ 
 /* ── MODAL ── */
 function openModal() {
   document.getElementById('akey').value = localStorage.getItem('_akey') || '';
@@ -649,36 +705,36 @@ function saveKey() {
   if (k) localStorage.setItem('_akey', k);
   closeModal();
 }
-
+ 
 /* ── TASKS ── */
 var TKEYS = ['kf','personal','family'];
-
+ 
 function getTasks(k) { try { return JSON.parse(localStorage.getItem('tasks_'+k)) || []; } catch(e) { return []; } }
 function saveTasks(k,a) { localStorage.setItem('tasks_'+k, JSON.stringify(a)); }
-
+ 
 function renderTasks(k) {
   var arr = getTasks(k);
   var ul  = document.getElementById('tl-'+k);
   ul.innerHTML = '';
-
+ 
   var done  = arr.filter(function(t){ return t.done; }).length;
   var total = arr.length;
   var pct   = total > 0 ? Math.round(done/total*100) : 0;
-
+ 
   document.getElementById('ct-'+k).textContent = done+'/'+total;
   document.getElementById('pc-'+k).textContent = pct+'%';
   document.getElementById('pf-'+k).style.width = pct+'%';
-
+ 
   arr.forEach(function(task, i) {
     var li = document.createElement('li');
     li.className = 'ti' + (task.done ? ' done' : '');
-
+ 
     /* checkbox */
     var cb = document.createElement('div');
     cb.className = 'tcb';
     cb.textContent = task.done ? '✓' : '';
     cb.addEventListener('click', function(){ toggleTask(k,i); });
-
+ 
     /* label */
     var lb = document.createElement('div');
     lb.className = 'tlb';
@@ -690,22 +746,22 @@ function renderTasks(k) {
       if (e.key==='Enter') { e.preventDefault(); lb.blur(); }
       if (e.key==='Escape'){ lb.textContent = task.text; lb.blur(); }
     });
-
+ 
     /* priority */
     var pr = document.createElement('span');
     pr.className = 'pri '+(task.priority||'med');
     pr.textContent = (task.priority||'med').toUpperCase();
-
+ 
     /* delete */
     var dl = document.createElement('button');
     dl.className = 'tdel'; dl.title = 'Delete'; dl.textContent = '✕';
     dl.addEventListener('click', function(){ deleteTask(k,i); });
-
+ 
     li.appendChild(cb); li.appendChild(lb); li.appendChild(pr); li.appendChild(dl);
     ul.appendChild(li);
   });
 }
-
+ 
 function addTask(k) {
   var inp = document.getElementById('ti-'+k);
   var sel = document.getElementById('ps-'+k);
@@ -716,28 +772,28 @@ function addTask(k) {
   saveTasks(k,arr); renderTasks(k);
   inp.value = ''; inp.focus();
 }
-
+ 
 function toggleTask(k,i) {
   var arr = getTasks(k);
   if (arr[i]) { arr[i].done = !arr[i].done; saveTasks(k,arr); renderTasks(k); }
 }
-
+ 
 function deleteTask(k,i) {
   var arr = getTasks(k);
   arr.splice(i,1); saveTasks(k,arr); renderTasks(k);
 }
-
+ 
 function editTask(k,i,txt) {
   if (!txt) return;
   var arr = getTasks(k);
   if (arr[i] && arr[i].text !== txt) { arr[i].text = txt; saveTasks(k,arr); }
 }
-
+ 
 function clearDone(k) {
   saveTasks(k, getTasks(k).filter(function(t){ return !t.done; }));
   renderTasks(k);
 }
-
+ 
 /* Enter-key on inputs */
 TKEYS.forEach(function(k){
   setTimeout(function(){
@@ -745,7 +801,7 @@ TKEYS.forEach(function(k){
     if (inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') addTask(k); });
   }, 150);
 });
-
+ 
 /* ── NEWS TABS ── */
 function showNTab(tab, btn) {
   document.querySelectorAll('.npanel').forEach(function(p){ p.classList.remove('on'); });
@@ -753,24 +809,24 @@ function showNTab(tab, btn) {
   document.getElementById('np-'+tab).classList.add('on');
   btn.classList.add('on');
 }
-
+ 
 /* ── NEWS FETCH ── */
 async function fetchNews() {
   var akey = localStorage.getItem('_akey');
   if (!akey) { openModal(); return; }
-
+ 
   var btn = document.getElementById('rfbtn');
   var ts  = document.getElementById('nts');
   btn.disabled = true; btn.innerHTML = '⏳ Loading…'; ts.textContent = 'Fetching…';
-
+ 
   ['uk','turkey','mideast','sports'].forEach(function(t){
     document.getElementById('np-'+t).innerHTML =
       '<div class="nload"><div class="spin"></div><span>Searching latest headlines…</span></div>';
   });
-
+ 
   try {
     var today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-
+ 
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
       headers:{
@@ -785,31 +841,31 @@ async function fetchNews() {
         tools:[{ type:'web_search_20250305', name:'web_search' }],
         messages:[{
           role:'user',
-          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure: {"uk": [{title, source, time, summary}], "turkey": [...], "mideast": [...], "sports": [...]}. Fetch 3 items per category.'
+          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure exactly:\n{"uk":[{"title":"...","summary":"one clear sentence","source":"...","time":"X hours ago"}],"turkey":[same],"mideast":[same],"sports":[same]}\nuk: top 8 UK news stories. turkey: top 6 Turkish news (in English). mideast: top 6 Middle East news. sports: top 6 mixing Galatasaray SK and English Premier League results/news. Use real current news from the web. Return ONLY the JSON object, nothing else.'
         }]
       })
     });
-
+ 
     if (!res.ok) {
       var err = await res.json();
       throw new Error(err.error ? err.error.message : 'API error '+res.status);
     }
-
+ 
     var data = await res.json();
     var raw = '';
     if (data.content) data.content.forEach(function(b){ if(b.type==='text') raw += b.text; });
-
+ 
     raw = raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
     var m = raw.match(/\{[\s\S]*\}/);
     if (!m) throw new Error('No JSON found in response');
     var news = JSON.parse(m[0]);
-
+ 
     renderNews(news);
-
+ 
     var now = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     ts.textContent = 'Updated '+now;
     localStorage.setItem('_ncache', JSON.stringify({d:news, t:new Date().toISOString()}));
-
+ 
   } catch(err) {
     console.error(err);
     ts.textContent = 'Error: '+err.message;
@@ -818,10 +874,10 @@ async function fetchNews() {
         '<div class="nempty"><p>⚠️ '+String(err.message).replace(/</g,'&lt;')+'</p><p style="font-size:11px;margin-top:6px;">Check your API key in ⚙ Settings</p></div>';
     });
   }
-
+ 
   btn.disabled = false; btn.innerHTML = '🔄 Refresh News';
 }
-
+ 
 function renderNews(data) {
   ['uk','turkey','mideast','sports'].forEach(function(key){
     var panel = document.getElementById('np-'+key);
@@ -840,7 +896,7 @@ function renderNews(data) {
     }).join('');
   });
 }
-
+ 
 function loadNewsCache() {
   try {
     var raw = localStorage.getItem('_ncache');
@@ -854,7 +910,7 @@ function loadNewsCache() {
     }
   } catch(e) {}
 }
-
+ 
 /* ── CALENDAR ── */
 var EVENTS = [
   /* Bank Holidays */
@@ -883,19 +939,19 @@ var EVENTS = [
   /* KF */
   {date:'2027-04-30', title:'🏢 KF FY27 Year End',       sub:'Korn Ferry Fiscal Year End',             type:'kf'},
 ];
-
+ 
 function buildCalendar() {
   var today = new Date(); today.setHours(0,0,0,0);
   var grid  = document.getElementById('egrid');
-
+ 
   var upcoming = EVENTS
     .map(function(e){ return Object.assign({},e,{dt:new Date(e.date)}); })
     .filter(function(e){ return e.dt >= today; })
     .sort(function(a,b){ return a.dt-b.dt; })
     .slice(0,16);
-
+ 
   if (!upcoming.length) { grid.innerHTML='<p style="color:var(--muted);padding:20px;text-align:center;">No upcoming events</p>'; return; }
-
+ 
   grid.innerHTML = upcoming.map(function(e){
     var diff = Math.ceil((e.dt-today)/86400000);
     var chip, chipC;
@@ -903,10 +959,10 @@ function buildCalendar() {
     else if (diff===1) { chip='Tomorrow'; chipC='near'; }
     else if (diff<=21){ chip=diff+' days'; chipC='near'; }
     else               { chip=diff+' days'; chipC='far';  }
-
+ 
     var dd = e.dt.getDate();
     var mm = e.dt.toLocaleDateString('en-GB',{month:'short'}).toUpperCase();
-
+ 
     return '<div class="eitem">'
       +'<div class="edate '+e.type+'"><div class="edd">'+dd+'</div><div class="emm">'+mm+'</div></div>'
       +'<div class="einfo"><div class="etitle">'+e.title+'</div><div class="esub">'+e.sub+'</div></div>'
@@ -914,12 +970,12 @@ function buildCalendar() {
       +'</div>';
   }).join('');
 }
-
+ 
 /* ── INIT ── */
 TKEYS.forEach(renderTasks);
 loadNewsCache();
 buildCalendar();
-
+ 
 /* First-run welcome */
 if (!localStorage.getItem('_welcomed')) {
   localStorage.setItem('_welcomed','1');
