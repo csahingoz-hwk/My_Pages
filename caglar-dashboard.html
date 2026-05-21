@@ -583,29 +583,25 @@ body {
         </div>
       </div>
  
-      <!-- Turkish Markets TradingView widget -->
+      <!-- Turkish Markets: ECB rates + BIST 100 mini chart -->
       <div class="mwrap" style="grid-column:1/-1">
-        <div class="mlabel">🇹🇷 Turkish Markets — TRY Pairs & BIST</div>
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-          {
-            "colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en",
-            "width":"100%","height":"500","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,
-            "tabs":[
-              {"title":"TRY Pairs","symbols":[
-                {"s":"FX:USDTRY","d":"USD / TRY"},{"s":"FX:EURTRY","d":"EUR / TRY"},
-                {"s":"FX:GBPTRY","d":"GBP / TRY"},{"s":"FX:CHFTRY","d":"CHF / TRY"},
-                {"s":"FX:JPYTRY","d":"JPY / TRY"},{"s":"FX:AEDTRY","d":"AED / TRY"}
-              ]},
-              {"title":"BIST","symbols":[
-                {"s":"BIST:XU100","d":"BIST 100"},{"s":"BIST:XBANK","d":"Banking Index"},
-                {"s":"BIST:GARAN","d":"Garanti BBVA"},{"s":"BIST:AKBNK","d":"Akbank"},
-                {"s":"BIST:THYAO","d":"Turkish Airlines"},{"s":"BIST:SAHOL","d":"Sabancı Holding"}
-              ]}
-            ]
-          }
-          </script>
+        <div class="mlabel" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px;">
+          <span>🇹🇷 Turkish Markets</span>
+          <span id="try-ts" style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:normal;color:var(--muted);"></span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:0;">
+          <div id="try-card" style="flex:1;min-width:360px;padding:18px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-content:start;">
+            <div style="grid-column:1/-1;text-align:center;color:rgba(212,197,160,0.4);font-size:12px;padding:20px;">Loading…</div>
+          </div>
+          <div style="width:280px;border-left:1px solid var(--border2);flex-shrink:0;">
+            <div style="padding:11px 16px;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.18em;">BIST 100</div>
+            <div class="tradingview-widget-container">
+              <div class="tradingview-widget-container__widget"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+              {"symbol":"BIST:XU100","width":"100%","height":"220","locale":"en","dateRange":"1D","colorTheme":"dark","isTransparent":true,"noTimeScale":false}
+              </script>
+            </div>
+          </div>
         </div>
       </div>
  
@@ -652,6 +648,61 @@ body {
 'use strict';
  
 /* ── CLOCK ── */
+
+/* ── TRY Rates (ECB via jsdelivr, with % change vs yesterday) ── */
+async function fetchTRY() {
+  var card = document.getElementById('try-card');
+  var ts   = document.getElementById('try-ts');
+  try {
+    var yDate = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    var results = await Promise.all([
+      fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/try.json'),
+      fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@' + yDate + '/v1/currencies/try.json')
+    ]);
+    var r  = (await results[0].json()).try;
+    var ry = (await results[1].json()).try;
+
+    var pairs = [
+      {label:'USD/TRY', flag:'🇺🇸', cur:r.usd,  prv:ry.usd,  dp:3},
+      {label:'EUR/TRY', flag:'🇪🇺', cur:r.eur,  prv:ry.eur,  dp:3},
+      {label:'GBP/TRY', flag:'🇬🇧', cur:r.gbp,  prv:ry.gbp,  dp:3},
+      {label:'CHF/TRY', flag:'🇨🇭', cur:r.chf,  prv:ry.chf,  dp:3},
+      {label:'JPY/TRY', flag:'🇯🇵', cur:r.jpy,  prv:ry.jpy,  dp:4},
+      {label:'AED/TRY', flag:'🇦🇪', cur:r.aed,  prv:ry.aed,  dp:3}
+    ];
+
+    card.innerHTML = pairs.map(function(p) {
+      var val  = p.cur ? (1/p.cur).toFixed(p.dp) : '—';
+      var prev = p.prv ? (1/p.prv) : null;
+      var curr = parseFloat(val);
+      var pct = '', arrow = '', chgCol = 'rgba(212,197,160,0.35)', glow = 'transparent';
+      if (prev && !isNaN(curr)) {
+        var ch = (curr - prev) / prev * 100;
+        pct    = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%';
+        arrow  = ch >= 0 ? '▲' : '▼';
+        chgCol = ch >= 0 ? '#00CD97' : '#FF4D6D';
+        glow   = ch >= 0 ? 'rgba(0,205,151,0.06)' : 'rgba(255,77,109,0.06)';
+      }
+      return '<div style="background:rgba(0,23,59,0.6);border:1px solid rgba(201,168,76,0.13);border-radius:11px;padding:14px 16px;position:relative;overflow:hidden;">'
+        + '<div style="position:absolute;inset:0;background:linear-gradient(135deg,' + glow + ',transparent);pointer-events:none;"></div>'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px;">'
+        + '<span style="font-size:22px;line-height:1;">' + p.flag + '</span>'
+        + (pct ? '<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:' + chgCol + ';line-height:1.4;">' + arrow + ' ' + pct + '</span>' : '')
+        + '</div>'
+        + '<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:rgba(212,197,160,0.45);letter-spacing:.1em;margin-bottom:5px;">' + p.label + '</div>'
+        + '<div style="font-family:\'Share Tech Mono\',monospace;font-size:20px;color:#C9A84C;font-weight:500;letter-spacing:.01em;">' + val + '</div>'
+        + '</div>';
+    }).join('');
+
+    var now = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    ts.textContent = 'ECB · updated ' + now;
+  } catch(e) {
+    card.innerHTML = '<div style="grid-column:1/-1;color:rgba(212,197,160,0.4);font-size:12px;padding:16px;">Could not load rates: ' + e.message + '</div>';
+  }
+}
+
+fetchTRY();
+setInterval(fetchTRY, 5 * 60 * 1000);
 
 function tick() {
   var now = new Date();
