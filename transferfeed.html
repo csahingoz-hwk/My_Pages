@@ -681,7 +681,7 @@
           'anthropic-dangerous-direct-browser-access': 'true'
         },
         body   : JSON.stringify({
-          model     : 'claude-sonnet-4-5',
+          model     : 'claude-haiku-4-5-20251001',
           max_tokens: 4000,
           system    : 'You are a football transfer journalist. Always reply with ONLY a valid JSON array — no prose, no markdown fences.',
           tools,
@@ -795,6 +795,7 @@
       showError('Enter your Anthropic API key in the bar above, then click Refresh.', null, '');
       return;
     }
+    localStorage.setItem('transferhub_apikey', apiKey);
     const btn = document.getElementById('refreshBtn');
     btn.classList.add('spinning');
     btn.disabled = true;
@@ -865,10 +866,24 @@ Managers: Okan Buruk (GS), Arne Slot (LFC). Players must be real current footbal
   // Boot — wait for API key before auto-loading
   window.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('apiKeyInput');
-    // Auto-load once user pastes/types a full key
+
+    // Restore saved key
+    const saved = localStorage.getItem('transferhub_apikey');
+    if (saved) {
+      input.value = saved;
+      loadNews();
+      return;
+    }
+
+    // Save key on change; auto-load once valid
     input.addEventListener('input', () => {
-      if (input.value.trim().startsWith('sk-ant-')) loadNews();
+      const val = input.value.trim();
+      if (val.startsWith('sk-ant-')) {
+        localStorage.setItem('transferhub_apikey', val);
+        loadNews();
+      }
     });
+
     // Show prompt in feed columns instead of skeletons
     document.getElementById('gsFeed').innerHTML  = '<div class="empty-state">Enter your Anthropic API key above, then hit Refresh.</div>';
     document.getElementById('lfcFeed').innerHTML = '<div class="empty-state">Enter your Anthropic API key above, then hit Refresh.</div>';
