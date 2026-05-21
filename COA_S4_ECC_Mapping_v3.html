@@ -65,15 +65,10 @@ tr:hover{background:rgba(124,58,237,0.1)}
 <div class="stats" id="stats"></div>
 <div class="filters" id="filters">
 <button class="filter-btn active" data-filter="all">All</button>
-<button class="filter-btn" data-filter="100000">Assets</button>
-<button class="filter-btn" data-filter="200000">Liabilities</button>
-<button class="filter-btn" data-filter="300000">Equity</button>
-<button class="filter-btn" data-filter="400000">Revenue</button>
-<button class="filter-btn" data-filter="500000">Compensation</button>
-<button class="filter-btn" data-filter="600000">G&A</button>
-<button class="filter-btn" data-filter="700000">Bonuses</button>
-<button class="filter-btn" data-filter="800000">Other Inc/Exp</button>
-<button class="filter-btn" data-filter="900000">Tax</button>
+<button class="filter-btn" data-filter="gr2:100000">Assets</button>
+<button class="filter-btn" data-filter="gr2:200000">Liabilities</button>
+<button class="filter-btn" data-filter="gr2:300000-xgr4:344000">Equity (BS)</button>
+<button class="filter-btn" data-filter="gr4:344000">P&amp;L</button>
 </div>
 <div class="view-toggle">
 <button class="view-btn active" id="tableView">📋 Table View</button>
@@ -248,7 +243,19 @@ function applyFilters() {
     const search = document.getElementById('search').value.toLowerCase();
     filtered = DATA.filter(r => {
         const matchSearch = !search || r.some(cell => String(cell ?? '').toLowerCase().includes(search));
-                const matchFilter = currentFilter === 'all' || String(r[6]) === currentFilter;
+        let matchFilter = false;
+        if (currentFilter === 'all') {
+            matchFilter = true;
+        } else if (currentFilter.includes('-xgr4:')) {
+            const [gr2part, xgr4val] = currentFilter.split('-xgr4:');
+            matchFilter = String(r[6]) === gr2part.slice(4) && String(r[10]) !== xgr4val;
+        } else if (currentFilter.startsWith('gr2:')) {
+            matchFilter = String(r[6]) === currentFilter.slice(4);
+        } else if (currentFilter.startsWith('gr4:')) {
+            matchFilter = String(r[10]) === currentFilter.slice(4);
+        } else {
+            matchFilter = String(r[6]) === currentFilter;
+        }
         return matchSearch && matchFilter;
     });
     updateStats();
