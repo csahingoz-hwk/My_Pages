@@ -234,14 +234,19 @@ body {
  
 .ncard {
   background:rgba(255,255,255,0.025); border:1px solid var(--border2); border-radius:11px;
-  padding:14px 16px; transition:all .18s; display:flex; flex-direction:column; gap:8px;
+  padding:0; transition:all .18s; display:flex; flex-direction:column; gap:0;
+  text-decoration:none; color:inherit; cursor:pointer; overflow:hidden;
 }
 .ncard:hover { background:rgba(255,255,255,0.04); border-color:rgba(201,168,76,.2); transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,0,0,.35); }
-.nmeta { display:flex; align-items:center; gap:8px; }
+.ncard-banner { height:3px; width:100%; flex-shrink:0; }
+.ncard-body { padding:12px 14px; display:flex; flex-direction:column; gap:7px; flex:1; }
+.nmeta { display:flex; align-items:center; gap:6px; }
+.nfavicon { width:13px; height:13px; border-radius:2px; flex-shrink:0; }
 .nsrc { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--gold); letter-spacing:.08em; }
 .ntime { font-size:10px; color:var(--muted); margin-left:auto; }
 .ntitle { font-size:13.5px; font-weight:500; line-height:1.5; color:var(--text); }
 .nsum { font-size:12px; color:var(--text2); line-height:1.65; opacity:.75; }
+.ncard:visited .ntitle { color:var(--text2); }
  
 .nempty { grid-column:1/-1; text-align:center; padding:52px 20px; color:var(--muted); }
 .nempty p { margin-bottom:6px; }
@@ -578,13 +583,30 @@ body {
         </div>
       </div>
  
-      <!-- TRY Rates + BIST card -->
+      <!-- Turkish Markets TradingView widget -->
       <div class="mwrap" style="grid-column:1/-1">
-        <div class="mlabel">🇹🇷 Turkish Markets — Live Rates</div>
-        <div id="try-card" style="padding:18px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
-          <div style="text-align:center;color:rgba(212,197,160,0.4);font-family:'Share Tech Mono',monospace;font-size:12px;padding:20px;">Loading...</div>
+        <div class="mlabel">🇹🇷 Turkish Markets — TRY Pairs & BIST</div>
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+          {
+            "colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"en",
+            "width":"100%","height":"500","isTransparent":true,"showSymbolLogo":true,"showFloatingTooltip":false,
+            "tabs":[
+              {"title":"TRY Pairs","symbols":[
+                {"s":"FX:USDTRY","d":"USD / TRY"},{"s":"FX:EURTRY","d":"EUR / TRY"},
+                {"s":"FX:GBPTRY","d":"GBP / TRY"},{"s":"FX:CHFTRY","d":"CHF / TRY"},
+                {"s":"FX:JPYTRY","d":"JPY / TRY"},{"s":"FX:AEDTRY","d":"AED / TRY"}
+              ]},
+              {"title":"BIST","symbols":[
+                {"s":"BIST:XU100","d":"BIST 100"},{"s":"BIST:XBANK","d":"Banking Index"},
+                {"s":"BIST:GARAN","d":"Garanti BBVA"},{"s":"BIST:AKBNK","d":"Akbank"},
+                {"s":"BIST:THYAO","d":"Turkish Airlines"},{"s":"BIST:SAHOL","d":"Sabancı Holding"}
+              ]}
+            ]
+          }
+          </script>
         </div>
-        <div style="padding:4px 24px 14px;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(212,197,160,0.3);" id="try-ts">—</div>
       </div>
  
     </div>
@@ -630,57 +652,7 @@ body {
 'use strict';
  
 /* ── CLOCK ── */
- 
-// ── TRY Rates & BIST 100 ──────────────────────────────────────────
-async function fetchTRY() {
-  var card = document.getElementById('try-card');
-  var ts   = document.getElementById('try-ts');
-  try {
-    // Free currency API - no key needed
-    var res  = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/try.json');
-    var data = await res.json();
-    var r    = data.try;
- 
-    // BIST 100 via Yahoo Finance proxy
-    var bistVal = '—';
-    try {
-      var bres = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EXTI100?interval=1d&range=1d', {mode:'cors'});
-      if (bres.ok) {
-        var bdata = await bres.json();
-        var price = bdata?.chart?.result?.[0]?.meta?.regularMarketPrice;
-        if (price) bistVal = price.toLocaleString('en-GB', {maximumFractionDigits:0});
-      }
-    } catch(e) {}
- 
-    var pairs = [
-      { label:'USD / TRY', val: r.usd ? (1/r.usd).toFixed(2) : '—', flag:'🇺🇸' },
-      { label:'EUR / TRY', val: r.eur ? (1/r.eur).toFixed(2) : '—', flag:'🇪🇺' },
-      { label:'GBP / TRY', val: r.gbp ? (1/r.gbp).toFixed(2) : '—', flag:'🇬🇧' },
-      { label:'CHF / TRY', val: r.chf ? (1/r.chf).toFixed(2) : '—', flag:'🇨🇭' },
-      { label:'JPY / TRY', val: r.jpy ? (1/r.jpy).toFixed(4) : '—', flag:'🇯🇵' },
-      { label:'AED / TRY', val: r.aed ? (1/r.aed).toFixed(2) : '—', flag:'🇦🇪' },
-      { label:'BIST 100',  val: bistVal,                              flag:'📈' }
-    ];
- 
-    card.innerHTML = pairs.map(function(p) {
-      return '<div style="background:rgba(0,23,59,0.5);border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:14px 16px;text-align:center;">' +
-        '<div style="font-size:18px;margin-bottom:6px;">' + p.flag + '</div>' +
-        '<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:rgba(212,197,160,0.5);letter-spacing:.1em;margin-bottom:4px;">' + p.label + '</div>' +
-        '<div style="font-family:\'Share Tech Mono\',monospace;font-size:18px;color:#C9A84C;font-weight:500;">' + p.val + '</div>' +
-      '</div>';
-    }).join('');
- 
-    var now = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-    ts.textContent = 'Updated ' + now + ' · Source: fawazahmed0/currency-api (ECB rates)';
- 
-  } catch(e) {
-    card.innerHTML = '<div style="color:rgba(212,197,160,0.4);font-size:12px;padding:16px;">Could not load TRY rates: ' + e.message + '</div>';
-  }
-}
- 
-fetchTRY();
-setInterval(fetchTRY, 5 * 60 * 1000); // refresh every 5 minutes
- 
+
 function tick() {
   var now = new Date();
   document.getElementById('clk').textContent = now.toLocaleTimeString('en-GB',{hour12:false});
@@ -841,7 +813,7 @@ async function fetchNews() {
         tools:[{ type:'web_search_20250305', name:'web_search' }],
         messages:[{
           role:'user',
-          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure exactly:\n{"uk":[{"title":"...","summary":"one clear sentence","source":"...","time":"X hours ago"}],"turkey":[same],"mideast":[same],"sports":[same]}\nuk: top 8 UK news stories. turkey: top 6 Turkish news (in English). mideast: top 6 Middle East news. sports: top 6 mixing Galatasaray SK and English Premier League results/news. Use real current news from the web. Return ONLY the JSON object, nothing else.'
+          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure exactly:\n{"uk":[{"title":"...","summary":"one clear sentence","source":"Publisher Name","time":"X hours ago","url":"https://full-url-to-article"}],"turkey":[same],"mideast":[same],"sports":[same]}\nuk: top 8 UK news stories. turkey: top 6 Turkish news (in English). mideast: top 6 Middle East news. sports: top 6 mixing Galatasaray SK and English Premier League results/news. Use real current news from the web. Include the real article URL for each story. Return ONLY the JSON object, nothing else.'
         }]
       })
     });
@@ -879,6 +851,10 @@ async function fetchNews() {
 }
  
 function renderNews(data) {
+  var tabColors = {uk:'#3b82f6',turkey:'#ef4444',mideast:'#f59e0b',sports:'#10b981'};
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function getDomain(url) { try { return new URL(url).hostname.replace(/^www\./,''); } catch(e) { return ''; } }
+
   ['uk','turkey','mideast','sports'].forEach(function(key){
     var panel = document.getElementById('np-'+key);
     var items = data[key] || [];
@@ -886,13 +862,22 @@ function renderNews(data) {
       panel.innerHTML = '<div class="nempty"><p>No items returned for this category.</p></div>';
       return;
     }
-    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    var color = tabColors[key] || '#888';
     panel.innerHTML = items.map(function(it){
-      return '<div class="ncard">'
-        +'<div class="nmeta"><span class="nsrc">'+esc(it.source||'NEWS')+'</span><span class="ntime">'+esc(it.time||'')+'</span></div>'
+      var domain = getDomain(it.url || '');
+      var favicon = domain
+        ? '<img class="nfavicon" src="https://www.google.com/s2/favicons?domain='+esc(domain)+'&sz=32" alt="" onerror="this.style.display=\'none\'">'
+        : '';
+      var tag = it.url ? 'a' : 'div';
+      var href = it.url ? ' href="'+esc(it.url)+'" target="_blank" rel="noopener noreferrer"' : '';
+      return '<'+tag+' class="ncard"'+href+'>'
+        +'<div class="ncard-banner" style="background:linear-gradient(90deg,'+color+'55,'+color+'18)"></div>'
+        +'<div class="ncard-body">'
+        +'<div class="nmeta">'+favicon+'<span class="nsrc">'+esc(it.source||'NEWS')+'</span><span class="ntime">'+esc(it.time||'')+'</span></div>'
         +'<div class="ntitle">'+esc(it.title||'')+'</div>'
         +(it.summary ? '<div class="nsum">'+esc(it.summary)+'</div>' : '')
-        +'</div>';
+        +'</div>'
+        +'</'+tag+'>';
     }).join('');
   });
 }
