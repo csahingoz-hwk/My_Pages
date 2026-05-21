@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KF Document Signer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.hdr{background:linear-gradient(135deg,#1a2340,#0d1b2a);padding:11px 18px;border-bottom:2px solid #c9a84c;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.kfb{background:#c9a84c;color:#0d1b2a;font-weight:800;font-size:12px;padding:5px 10px;border-radius:4px;letter-spacing:1px}
+.hdr h1{font-size:16px;color:#c9a84c;font-weight:700}
+.hdr p{font-size:10px;color:#555;margin-top:1px}
+.main{display:flex;flex:1;overflow:hidden}
+.left{width:268px;min-width:268px;background:#161b27;border-right:1px solid #2a3042;display:flex;flex-direction:column;overflow:hidden}
+.ls{flex:1;overflow-y:auto;padding:11px;display:flex;flex-direction:column;gap:11px}
+.ls::-webkit-scrollbar{width:3px}.ls::-webkit-scrollbar-thumb{background:#2a3042;border-radius:2px}
+.st{font-size:10px;font-weight:700;color:#c9a84c;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
+.dz{border:2px dashed #3a4458;border-radius:7px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:#0f1520}
+.dz:hover,.dz.ov{border-color:#c9a84c;background:#1a2030}
+.dz .ico{font-size:24px}.dz p{font-size:10px;color:#777;margin-top:3px;line-height:1.4}
+.dz p strong{color:#c9a84c}
+.fq{display:flex;flex-direction:column;gap:3px;max-height:120px;overflow-y:auto}
+.fq::-webkit-scrollbar{width:3px}.fq::-webkit-scrollbar-thumb{background:#2a3042}
+.fi{display:flex;align-items:center;gap:5px;background:#0f1520;border:1px solid #2a3042;border-radius:5px;padding:5px 7px;cursor:pointer;font-size:11px;transition:all .15s}
+.fi:hover{border-color:#4a6080}.fi.act{border-color:#c9a84c;background:#1a2030}.fi.done{border-color:#2d6a2d}
+.fi .fn{flex:1;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi .fb{font-size:9px;padding:2px 4px;border-radius:3px;background:#2a3042;color:#777}
+.fi.done .fb{background:#1a3a1a;color:#5c5}.fi.act .fb{background:#3a2a00;color:#c9a84c}
+.frm{background:none;border:none;color:#444;cursor:pointer;font-size:13px;padding:0 1px}.frm:hover{color:#e53935}
+.sig-panel{background:#0f1520;border:1px solid #2a3042;border-radius:7px;padding:8px}
+.sig-thumb-wrap{display:flex;align-items:center;justify-content:center;height:54px;border-radius:5px;overflow:hidden;margin-bottom:6px;background-image:linear-gradient(45deg,#1e1e1e 25%,transparent 25%),linear-gradient(-45deg,#1e1e1e 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1e1e1e 75%),linear-gradient(-45deg,transparent 75%,#1e1e1e);background-size:8px 8px;background-position:0 0,0 4px,4px -4px,-4px 0}
+.sig-thumb-wrap img{max-height:52px;max-width:100%;object-fit:contain}
+.sig-actions{display:flex;gap:5px}
+.sa-btn{flex:1;padding:4px;border:1px solid #3a4458;border-radius:4px;background:#161b27;color:#aaa;font-size:10px;cursor:pointer;text-align:center;transition:all .15s}
+.sa-btn:hover{border-color:#c9a84c;color:#c9a84c}
+.sa-btn.danger:hover{border-color:#e53935;color:#e53935}
+.stamp-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.stamp-card{position:relative;background:#0a0e18;border:2px solid #2a3042;border-radius:6px;padding:6px;cursor:pointer;transition:all .2s;text-align:center}
+.stamp-card:hover{border-color:#4a6080}.stamp-card.act{border-color:#c9a84c;background:#1a2030}
+.stamp-card .sc-del{position:absolute;top:-7px;right:-7px;width:16px;height:16px;background:#e53935;border-radius:50%;border:none;color:#fff;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.stamp-card:hover .sc-del{display:flex}
+.stamp-thumb{width:100%;height:40px;display:flex;align-items:center;justify-content:center;background-image:linear-gradient(45deg,#1e1e1e 25%,transparent 25%),linear-gradient(-45deg,#1e1e1e 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1e1e1e 75%),linear-gradient(-45deg,transparent 75%,#1e1e1e);background-size:8px 8px;background-position:0 0,0 4px,4px -4px,-4px 0;border-radius:3px;overflow:hidden}
+.stamp-thumb img{max-width:100%;max-height:40px;object-fit:contain}
+.stamp-card span{display:block;font-size:9px;color:#777;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stamp-card.act span{color:#c9a84c}
+.add-stamp-btn{grid-column:1/-1;padding:6px;border:1px dashed #3a4458;border-radius:5px;background:none;color:#666;font-size:10px;cursor:pointer;text-align:center;transition:all .15s}
+.add-stamp-btn:hover{border-color:#c9a84c;color:#c9a84c}
+.tog{display:flex;align-items:center;gap:6px;font-size:11px;color:#aaa;cursor:pointer;margin-top:5px}
+.tog input{accent-color:#c9a84c;width:13px;height:13px}
+.page-nav{display:flex;align-items:center;gap:6px;background:#0f1520;border:1px solid #2a3042;border-radius:6px;padding:7px 9px}
+.pn-btn{background:#1e2a3a;border:1px solid #2a3042;border-radius:4px;color:#aaa;font-size:13px;cursor:pointer;width:26px;height:26px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pn-btn:hover:not(:disabled){border-color:#c9a84c;color:#c9a84c}
+.pn-btn:disabled{opacity:.3;cursor:not-allowed}
+.pn-info{flex:1;text-align:center;font-size:11px;color:#aaa}
+.pn-info strong{color:#c9a84c}
+.all-pages-row{display:flex;align-items:center;gap:7px;background:#0f1520;border:1px solid #2a4030;border-radius:6px;padding:7px 9px;font-size:11px;color:#8c8;margin-top:5px}
+.all-pages-row input{accent-color:#5c5;width:13px;height:13px}
+.hint{font-size:10px;color:#444;line-height:1.7;padding:6px 8px;background:#0a0f1a;border-radius:5px;border-left:3px solid #2a3042}
+.hint strong{color:#c9a84c}
+.btn{width:100%;padding:9px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,#c9a84c,#a07830);color:#0d1b2a}
+.btn-gold:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+.btn-gold:disabled{background:#2a3042;color:#444;transform:none;cursor:not-allowed}
+.btn-ol{background:#0f1520;color:#c9a84c;border:1px solid #c9a84c;margin-bottom:4px}
+.btn-ol:hover:not(:disabled){background:#1a2030}
+.btn-ol:disabled{opacity:.35;cursor:not-allowed}
+.btn-ai{background:linear-gradient(135deg,#3a1a5a,#1a0a3a);color:#c8a0ff;border:1px solid #6a3a9a;margin-bottom:4px}
+.btn-ai:hover:not(:disabled){filter:brightness(1.2)}
+.btn-ai:disabled{opacity:.35;cursor:not-allowed}
+.btn-grn{background:linear-gradient(135deg,#2a6a2a,#1a4a1a)!important;color:#8f8!important}
+.lb{padding:10px 11px;border-top:1px solid #2a3042;display:flex;flex-direction:column;gap:4px}
+.pb{height:3px;background:#2a3042;border-radius:2px;overflow:hidden;margin-top:2px}
+.pf{height:100%;background:#c9a84c;transition:width .3s}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#161b27;border:1px solid #2a3042;border-radius:10px;max-width:92vw;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;min-width:420px}
+.modal-hdr{padding:12px 16px;border-bottom:1px solid #2a3042;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-hdr span{color:#c9a84c;font-weight:700;font-size:14px}
+.modal-close{background:#2a3042;border:none;border-radius:4px;color:#aaa;cursor:pointer;padding:4px 10px;font-size:12px}
+.modal-close:hover{background:#3a4052;color:#fff}
+.modal-body{overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.modal-body canvas{max-width:100%;box-shadow:0 4px 20px rgba(0,0,0,.5);border:1px solid #2a3042}
+.modal-footer{padding:12px 16px;border-top:1px solid #2a3042;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;flex-wrap:wrap}
+.cp{flex:1;display:flex;flex-direction:column;background:#1a1f2e;overflow:hidden}
+.tb{background:#161b27;border-bottom:1px solid #2a3042;padding:6px 14px;display:flex;align-items:center;gap:8px;font-size:11px;color:#555;flex-shrink:0}
+.tb .tag{background:#0f1520;padding:3px 8px;border-radius:4px;border:1px solid #2a3042}
+.dot{width:7px;height:7px;border-radius:50%;background:#333;display:inline-block;margin-right:3px}
+.dot.on{background:#4caf50}
+.cw{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px}
+.cw::-webkit-scrollbar{width:6px;height:6px}.cw::-webkit-scrollbar-thumb{background:#2a3042;border-radius:3px}
+.nodoc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#252b3a;font-size:14px;gap:8px;pointer-events:none}
+.nodoc .big{font-size:52px}
+.oc{position:relative;display:inline-block;line-height:0}
+#cv{display:block;box-shadow:0 8px 40px rgba(0,0,0,.7);background:#fff}
+#ov{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.di{position:absolute;cursor:move;pointer-events:all;user-select:none}
+.di img{display:block;pointer-events:none}
+.di .ol{position:absolute;inset:-2px;border:1.5px dashed transparent;border-radius:2px;pointer-events:none;transition:border-color .15s}
+.di.sel .ol,.di:hover .ol{border-color:rgba(201,168,76,.8)}
+.di .del{position:absolute;top:-8px;right:-8px;width:17px;height:17px;background:#e53935;border-radius:50%;border:none;color:#fff;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.di:hover .del,.di.sel .del{opacity:1}
+.rh{position:absolute;width:11px;height:11px;background:#c9a84c;border:2px solid #0d1b2a;border-radius:2px;pointer-events:all;z-index:10;opacity:0;transition:opacity .15s}
+.di:hover .rh,.di.sel .rh{opacity:1}
+.rh.se{bottom:-6px;right:-6px;cursor:se-resize}.rh.sw{bottom:-6px;left:-6px;cursor:sw-resize}
+.rh.ne{top:-6px;right:-6px;cursor:ne-resize}.rh.nw{top:-6px;left:-6px;cursor:nw-resize}
+.ai-status{font-size:10px;color:#9a6fc8;padding:5px 8px;background:#1a0a2a;border:1px solid #4a2a7a;border-radius:5px;display:none;line-height:1.5;margin-top:2px}
+#fileInput,#sigInput,#stampInput{display:none}
+.mbtn{padding:9px 18px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .2s}
+.mbtn:hover{filter:brightness(1.1)}
+.mbtn-pdf{background:linear-gradient(135deg,#c9a84c,#a07830);color:#0d1b2a}
+.mbtn-cancel{background:#2a3042;color:#aaa}
+.mbtn-cancel:hover{background:#3a4052}
+.page-lbl{font-size:10px;color:#555;margin-bottom:2px;text-align:center}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="kfb">KF</div>
+  <div><h1>Document Signer</h1><p>PDF output · Batch · Multi-page · AI Auto-detect</p></div>
+</div>
+<div class="main">
+<div class="left">
+<div class="ls">
+  <div>
+    <div class="st">📄 Documents</div>
+    <div class="dz" id="dz" onclick="document.getElementById('fileInput').click()">
+      <div class="ico">📎</div><p><strong>Click or drag files</strong><br>JPG · PNG · PDF · Multiple</p>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,.pdf" multiple>
+  </div>
+  <div>
+    <div class="st">📋 Queue <span id="qc" style="font-size:10px;color:#444;font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+    <div class="fq" id="fq"><div style="font-size:11px;color:#333;text-align:center;padding:8px">No files yet</div></div>
+    <div class="pb" style="margin-top:5px"><div class="pf" id="pf" style="width:0%"></div></div>
+  </div>
+  <div id="pageNavSection" style="display:none">
+    <div class="st">📖 Pages</div>
+    <div class="page-nav">
+      <button class="pn-btn" id="prevPage" onclick="goPage(-1)">‹</button>
+      <div class="pn-info">Page <strong id="curPage">1</strong> of <strong id="totPage">1</strong></div>
+      <button class="pn-btn" id="nextPage" onclick="goPage(1)">›</button>
+    </div>
+    <div class="all-pages-row">
+      <input type="checkbox" id="allPages" checked>
+      <label for="allPages">Apply to <strong>all pages</strong></label>
+    </div>
+  </div>
+  <div>
+    <div class="st">🖊️ Signature</div>
+    <div class="sig-panel">
+      <div class="sig-thumb-wrap"><img id="sigThumb" src=""></div>
+      <div class="sig-actions">
+        <div class="sa-btn" onclick="document.getElementById('sigInput').click()">📁 Replace</div>
+        <div class="sa-btn danger" onclick="resetSig()">↺ Reset</div>
+      </div>
+    </div>
+    <input type="file" id="sigInput" accept="image/*">
+    <div class="tog"><input type="checkbox" id="addSig" checked><label for="addSig">Include signature</label></div>
+  </div>
+  <div>
+    <div class="st">📮 Stamps</div>
+    <div class="stamp-grid" id="stampGrid"></div>
+    <div class="tog"><input type="checkbox" id="addStamp" checked><label for="addStamp">Include stamp</label></div>
+    <input type="file" id="stampInput" accept="image/*">
+  </div>
+  <div class="hint">
+    <strong>Export:</strong> PDF output — single or multi-page<br>
+    <strong>AI detect:</strong> Claude finds &amp; places signature areas<br>
+    <strong>Batch:</strong> all files merged into one PDF
+  </div>
+  <div>
+    <div class="st">🔑 Claude API Key</div>
+    <input type="password" id="claudeApiKey" placeholder="sk-ant-..." style="width:100%;padding:6px 8px;background:#0f1520;border:1px solid #3a4458;border-radius:5px;color:#ccc;font-size:11px;outline:none">
+    <div style="font-size:9px;color:#444;margin-top:3px">Key stored locally only. Required for AI Auto-Detect.</div>
+  </div>
+</div>
+<div class="lb">
+  <button class="btn btn-ai"  id="aiBtn"        disabled onclick="aiAutoPlace()">🤖 AI Auto-Detect</button>
+  <button class="btn btn-ol"  id="placeSigBtn"  disabled onclick="placeItem('sig')">🖊️ Place Signature</button>
+  <button class="btn btn-ol"  id="placeStampBtn" disabled onclick="placeItem('stamp')">📮 Place Stamp</button>
+  <button class="btn btn-gold" id="exportBtn"   disabled onclick="exportCurrent()">👁 Preview &amp; Save PDF</button>
+  <button class="btn btn-gold btn-grn" id="batchBtn" disabled onclick="batchExport()">📦 Batch → Single PDF</button>
+  <div class="ai-status" id="aiStatus"></div>
+</div>
+</div>
+
+<div class="cp">
+  <div class="tb">
+    <span class="tag"><span class="dot" id="sd"></span><span id="st2">No document</span></span>
+    <span class="tag" id="si">—</span>
+    <span class="tag" id="sq">0 / 0 files</span>
+  </div>
+  <div class="cw">
+    <div class="nodoc" id="nodoc"><div class="big">📄</div><div>Drop documents to get started</div></div>
+    <div class="oc" id="oc" style="display:none">
+      <canvas id="cv"></canvas>
+      <div id="ov"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr"><span id="modalTitle">Preview</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script>
+const ASSET_SIG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAHxCAYAAACbG045AAEAAElEQVR42uzdeZylV13g/88551nuVvfeWru6eks6na2zU1lYAp2wGJBFUCojyAwgEGQQcZkZdRytFDLiuPx0xJmRODqiM8qkUEZFRdnSYV";
+const ASSET_HAY_GROUP = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAE5CAYAAABMJl6+AAEAAElEQVR42uz9d4BlRZk//r+fqpNuDp1z9+Q8AzMMOWdBURRQUDHimllxXdfE4O4a14BpRV3MqIAgKDkMDJmZYQaYnLqnZzqHm+89";
+const ASSET_KF_AZ = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAInCAYAAABEEifIAAEAAElEQVR42uy9d5wdZfn+fz0zp/e25+yes72lh/RGSUIPvZiASFdQqSKoCGpARVREAREFpIoiCb0khJZGAum9bfr23k+fea7fH+csrAj6";
+const ASSET_KF_MENA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlcAAADfCAYAAADbR/YYAAEAAElEQVR42uydd7hdR3X2f2tml1NvVy+2ZVvuvdA7mOZQQmxKSCghjQT4EhJIQhLbCSEkpJIQem/GBkLvYGNsijHuXbYkq+vq9nvaLj";
+const ASSET_KF_QATAR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAIkCAYAAADChlVmAAEAAElEQVR42uz9eZRl2XXeB/72OXd4U8xjxpSZkXNmzVUoACQAgoNEapYsUTIpmhqpltVeq9WWbbWWbKnlbss2fazRskWRkjVQoCTKk";
+
+// Document management
+let docs=[], currentDocIdx=-1, pdfDoc=null;
+const fileInput=document.getElementById('fileInput');
+fileInput.addEventListener('change',handleFileSelect);
+document.getElementById('dz').addEventListener('dragover',e=>e.currentTarget.classList.add('ov'));
+document.getElementById('dz').addEventListener('dragleave',e=>e.currentTarget.classList.remove('ov'));
+document.getElementById('dz').addEventListener('drop',e=>{e.preventDefault();e.currentTarget.classList.remove('ov');handleFiles(e.dataTransfer.files)});
+
+function handleFileSelect(e){handleFiles(e.target.files)}
+function handleFiles(files){
+  for(let f of files){
+    let r=new FileReader();
+    r.onload=e=>{
+      let ext=f.name.split('.').pop().toLowerCase();
+      docs.push({name:f.name,type:ext==='pdf'?'pdf':'image',data:e.target.result});
+      updateQueue();
+      if(docs.length===1)loadDoc(0);
+    };
+    if(f.type.startsWith('image'))r.readAsDataURL(f);
+    else r.readAsArrayBuffer(f);
+  }
+}
+
+function updateQueue(){
+  let q=document.getElementById('fq');
+  q.innerHTML='';
+  docs.forEach((d,i)=>{
+    let el=document.createElement('div');
+    el.className='fi'+(i===currentDocIdx?' act':'')+(d.processed?' done':'');
+    el.innerHTML=`<span class="fn">${d.name}</span><span class="fb">${d.type}</span><button class="frm" onclick="deleteDoc(${i})">×</button>`;
+    el.onclick=()=>loadDoc(i);
+    q.appendChild(el);
+  });
+  document.getElementById('qc').textContent=`${docs.filter(d=>d.processed).length}/${docs.length}`;
+  document.getElementById('pf').style.width=(docs.length?Math.round(docs.filter(d=>d.processed).length/docs.length*100)+'%':'0%');
+}
+
+function deleteDoc(i){docs.splice(i,1);if(currentDocIdx>=docs.length)currentDocIdx=docs.length-1;updateQueue();if(docs.length===0)currentDocIdx=-1,showNoDocs()}
+function loadDoc(i){
+  currentDocIdx=i;
+  if(docs[i].type==='pdf'){
+    let p=pdfjsLib.getDocument({data:docs[i].data});
+    p.promise.then(pdf=>{pdfDoc=pdf;showPage(1)}).catch(e=>alert('PDF Error: '+e))
+  } else {
+    let img=new Image();
+    img.onload=()=>drawImage(img);
+    img.src=docs[i].data;
+  }
+  updateQueue();
+}
+
+function showPage(num){
+  if(!pdfDoc||num<1||num>pdfDoc.numPages)return;
+  pdfDoc.getPage(num).then(p=>{
+    let s=Math.min(800/p.view[2],600/p.view[3]);
+    let cv=document.getElementById('cv');
+    cv.width=p.view[2]*s;cv.height=p.view[3]*s;
+    p.render({canvasContext:cv.getContext('2d'),scale:s}).promise.then(()=>refreshOverlay());
+    document.getElementById('curPage').textContent=num;
+    document.getElementById('totPage').textContent=pdfDoc.numPages;
+  })
+}
+
+function drawImage(img){
+  let cv=document.getElementById('cv');
+  let s=Math.min(800/img.width,600/img.height);
+  cv.width=img.width*s;cv.height=img.height*s;
+  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+  refreshOverlay();
+}
+
+function goPage(d){if(pdfDoc)showPage(parseInt(document.getElementById('curPage').textContent)+d)}
+
+let sig=null,sigThumb=document.getElementById('sigThumb');
+document.getElementById('sigInput').addEventListener('change',e=>{
+  if(e.target.files[0]){
+    let r=new FileReader();
+    r.onload=ev=>{sig={data:ev.target.result};sigThumb.src=sig.data};
+    r.readAsDataURL(e.target.files[0]);
+  }
+});
+
+function resetSig(){sig=null;sigThumb.src=''}
+function placeItem(type){
+  if(!sig&&type==='sig')return alert('Add a signature first');
+  let el=document.createElement('div');
+  el.className='di';
+  el.style.left='100px';el.style.top='100px';el.style.width='150px';el.style.height='60px';
+  el.innerHTML=`<img src="${type==='sig'?sig.data:''}" style="width:100%;height:100%;object-fit:contain"><div class="ol"></div>`;
+  for(let p of['se','sw','ne','nw'])el.innerHTML+=`<div class="rh ${p}"></div>`;
+  el.innerHTML+=`<button class="del" onclick="this.parentElement.remove()">×</button>`;
+  makeMovable(el);
+  document.getElementById('ov').appendChild(el);
+}
+
+function makeMovable(el){
+  let ox,oy,sx,sy,res;
+  el.onmousedown=e=>{
+    if(e.target.classList.contains('rh')){
+      res=e.target.className.split(' ')[1];sx=e.clientX;sy=e.clientY;
+      el.classList.add('sel');
+    } else {
+      el.classList.add('sel');ox=e.clientX-el.offsetLeft;oy=e.clientY-el.offsetTop;
+    }
+  };
+  document.onmousemove=e=>{
+    if(!el.classList.contains('sel'))return;
+    if(res){
+      let dw=e.clientX-sx,dh=e.clientY-sy;
+      if(res.includes('e'))el.style.width=Math.max(50,el.offsetWidth+dw)+'px';
+      if(res.includes('s'))el.style.height=Math.max(30,el.offsetHeight+dh)+'px';
+      if(res.includes('w'))el.style.left=Math.max(0,el.offsetLeft+dw)+'px',el.style.width=Math.max(50,el.offsetWidth-dw)+'px';
+      if(res.includes('n'))el.style.top=Math.max(0,el.offsetTop+dh)+'px',el.style.height=Math.max(30,el.offsetHeight-dh)+'px';
+      sx=e.clientX;sy=e.clientY;
+    } else {
+      el.style.left=Math.max(0,Math.min(e.clientX-ox,document.getElementById('ov').offsetWidth-el.offsetWidth))+'px';
+      el.style.top=Math.max(0,Math.min(e.clientY-oy,document.getElementById('ov').offsetHeight-el.offsetHeight))+'px';
+    }
+  };
+  document.onmouseup=()=>{res=null;el.classList.remove('sel')};
+}
+
+function aiAutoPlace(){alert('AI placement requires implementation')}
+function exportCurrent(){alert('Export requires PDF library')}
+function batchExport(){alert('Batch export requires implementation')}
+function showNoDocs(){document.getElementById('nodoc').style.display='flex';document.getElementById('oc').style.display='none'}
+function refreshOverlay(){document.getElementById('ov').style.width=document.getElementById('cv').offsetWidth+'px';document.getElementById('ov').style.height=document.getElementById('cv').offsetHeight+'px'}
+
+window.addEventListener('resize',refreshOverlay);
+document.addEventListener('DOMContentLoaded',showNoDocs);
+closeModal=()=>{document.getElementById('modalBg').style.display='none'};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+</body>
+</html>
