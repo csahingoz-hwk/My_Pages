@@ -513,7 +513,7 @@ body {
       <div id="np-uk" class="npanel on">
         <div class="nempty">
           <p>📰 Click <strong>Refresh News</strong> above to load today's headlines.</p>
-          <p style="font-size:11px;margin-top:8px;">Needs an Anthropic API key — open <strong>⚙ Settings</strong> first.</p>
+          <p style="font-size:11px;margin-top:8px;">The news feed is now free, keyless, and powered by Google News.</p>
         </div>
       </div>
       <div id="np-turkey"  class="npanel"><div class="nempty"><p>📰 Click <strong>Refresh News</strong> to load today's headlines.</p></div></div>
@@ -628,17 +628,11 @@ body {
   <div class="modal">
     <div class="modal-t">⚙ Settings</div>
     <div class="modal-s">
-      Enter your Anthropic API key to enable the live AI-powered news feed.<br>
-      The key is stored only in <em>your browser's localStorage</em> — never sent anywhere except Anthropic's own API.
-    </div>
-    <div class="mfield">
-      <label>Anthropic API Key</label>
-      <input type="password" id="akey" placeholder="sk-ant-api03-…" autocomplete="off">
-      <div class="mhint">Get your key at <strong>console.anthropic.com</strong> → API Keys</div>
+      The news feed is now powered by free, safe, and live Google News RSS feeds.<br>
+      No API key or paid subscription is required!
     </div>
     <div class="mbtns">
-      <button class="btns" onclick="closeModal()">Cancel</button>
-      <button class="btnp" onclick="saveKey()">Save & Close</button>
+      <button class="btnp" onclick="closeModal()">Close</button>
     </div>
   </div>
 </div>
@@ -719,15 +713,9 @@ function jumpTo(id) {
  
 /* ── MODAL ── */
 function openModal() {
-  document.getElementById('akey').value = localStorage.getItem('_akey') || '';
   document.getElementById('overlay').classList.add('open');
 }
 function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-function saveKey() {
-  var k = document.getElementById('akey').value.trim();
-  if (k) localStorage.setItem('_akey', k);
-  closeModal();
-}
  
 /* ── TASKS ── */
 var TKEYS = ['kf','personal','family'];
@@ -834,10 +822,32 @@ function showNTab(tab, btn) {
 }
  
 /* ── NEWS FETCH ── */
+function getRelativeTime(pubDateStr) {
+  if (!pubDateStr) return '';
+  try {
+    // rss2json returns "YYYY-MM-DD HH:MM:SS" in UTC.
+    // Replace the space with 'T' and append 'Z' to parse it accurately as UTC.
+    var utcStr = pubDateStr.replace(' ', 'T') + 'Z';
+    var pubDate = new Date(utcStr);
+    var now = new Date();
+    var diffMs = now - pubDate;
+    var diffMins = Math.floor(diffMs / 60000);
+    var diffHours = Math.floor(diffMins / 60);
+    var diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 60) {
+      return diffMins <= 1 ? 'just now' : diffMins + ' mins ago';
+    } else if (diffHours < 24) {
+      return diffHours === 1 ? '1 hour ago' : diffHours + ' hours ago';
+    } else {
+      return diffDays === 1 ? 'yesterday' : diffDays + ' days ago';
+    }
+  } catch(e) {
+    return '';
+  }
+}
+
 async function fetchNews() {
-  var akey = localStorage.getItem('_akey');
-  if (!akey) { openModal(); return; }
- 
   var btn = document.getElementById('rfbtn');
   var ts  = document.getElementById('nts');
   btn.disabled = true; btn.innerHTML = '⏳ Loading…'; ts.textContent = 'Fetching…';
@@ -847,54 +857,68 @@ async function fetchNews() {
       '<div class="nload"><div class="spin"></div><span>Searching latest headlines…</span></div>';
   });
  
+  var feeds = {
+    uk: 'https://news.google.com/rss?hl=en-GB&gl=GB&ceid=GB:en',
+    turkey: 'https://news.google.com/rss/search?q=Turkey&hl=en-GB&gl=GB&ceid=GB:en',
+    mideast: 'https://news.google.com/rss/search?q=Middle+East&hl=en-GB&gl=GB&ceid=GB:en',
+    sports: 'https://news.google.com/rss/search?q=Galatasaray+OR+%22Premier+League%22&hl=en-GB&gl=GB&ceid=GB:en'
+  };
+ 
+  var results = {};
+  var categories = ['uk', 'turkey', 'mideast', 'sports'];
+  
   try {
-    var today = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
- 
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': akey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens: 4000,
-        tools:[{ type:'web_search_20250305', name:'web_search' }],
-        messages:[{
-          role:'user',
-          content:'Today is '+today+'. Search the web for the very latest breaking news right now. Return ONLY a raw JSON object — absolutely no markdown, no code fences, no explanation. Structure exactly:\n{"uk":[{"title":"...","summary":"one clear sentence","source":"Publisher Name","time":"X hours ago","url":"https://full-url-to-article"}],"turkey":[same],"mideast":[same],"sports":[same]}\nuk: top 8 UK news stories. turkey: top 6 Turkish news (in English). mideast: top 6 Middle East news. sports: top 6 mixing Galatasaray SK and English Premier League results/news. Use real current news from the web. Include the real article URL for each story. Return ONLY the JSON object, nothing else.'
-        }]
-      })
-    });
- 
-    if (!res.ok) {
-      var err = await res.json();
-      throw new Error(err.error ? err.error.message : 'API error '+res.status);
-    }
- 
-    var data = await res.json();
-    var raw = '';
-    if (data.content) data.content.forEach(function(b){ if(b.type==='text') raw += b.text; });
- 
-    raw = raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-    var m = raw.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('No JSON found in response');
-    var news = JSON.parse(m[0]);
- 
-    renderNews(news);
+    await Promise.all(categories.map(async function(key) {
+      var feedUrl = feeds[key];
+      var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl);
+      
+      var res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('CORS request failed');
+      
+      var data = await res.json();
+      if (data.status !== 'ok') throw new Error(data.message || 'API error');
+      
+      var items = data.items || [];
+      var limit = key === 'uk' ? 8 : 6;
+      var parsedItems = [];
+      
+      for (var i = 0; i < Math.min(items.length, limit); i++) {
+        var item = items[i];
+        var rawTitle = item.title || '';
+        var title = rawTitle;
+        var source = 'Google News';
+        
+        // Extract publisher name from title (Google News formats titles as: "Headline - Source")
+        var dashIndex = rawTitle.lastIndexOf(' - ');
+        if (dashIndex !== -1) {
+          source = rawTitle.substring(dashIndex + 3);
+          title = rawTitle.substring(0, dashIndex);
+        }
+        
+        parsedItems.push({
+          title: title,
+          summary: '', // Keep card layouts super clean and elegant
+          source: source,
+          time: getRelativeTime(item.pubDate),
+          url: item.link || ''
+        });
+      }
+      
+      results[key] = parsedItems;
+    }));
+    
+    renderNews(results);
  
     var now = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     ts.textContent = 'Updated '+now;
-    localStorage.setItem('_ncache', JSON.stringify({d:news, t:new Date().toISOString()}));
+    localStorage.setItem('_ncache', JSON.stringify({d:results, t:new Date().toISOString()}));
  
   } catch(err) {
     console.error(err);
     ts.textContent = 'Error: '+err.message;
-    ['uk','turkey','mideast','sports'].forEach(function(t){
+    categories.forEach(function(t){
       document.getElementById('np-'+t).innerHTML =
-        '<div class="nempty"><p>⚠️ '+String(err.message).replace(/</g,'&lt;')+'</p><p style="font-size:11px;margin-top:6px;">Check your API key in ⚙ Settings</p></div>';
+        '<div class="nempty"><p>⚠️ '+String(err.message).replace(/</g,'&lt;')+'</p><p style="font-size:11px;margin-top:6px;">Please try refreshing again later.</p></div>';
     });
   }
  
@@ -1012,14 +1036,18 @@ TKEYS.forEach(renderTasks);
 loadNewsCache();
 buildCalendar();
  
-/* First-run welcome */
-if (!localStorage.getItem('_welcomed')) {
-  localStorage.setItem('_welcomed','1');
-  if (!localStorage.getItem('_akey')) {
-    setTimeout(function(){
-      if(confirm('Welcome to your Command Dashboard! 🎉\n\nTo enable live AI-powered news, add your Anthropic API key.\n\nOpen Settings now?')) openModal();
-    }, 900);
-  }
+/* Automatically fetch fresh news if there is no cache, or if cache is older than 30 mins */
+var cached = localStorage.getItem('_ncache');
+var fetchFresh = true;
+if (cached) {
+  try {
+    var c = JSON.parse(cached);
+    var ageMin = (Date.now() - new Date(c.t).getTime()) / 60000;
+    if (ageMin < 30) fetchFresh = false;
+  } catch(e) {}
+}
+if (fetchFresh) {
+  setTimeout(fetchNews, 800);
 }
 </script>
 </body>
