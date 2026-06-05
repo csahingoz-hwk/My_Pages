@@ -489,7 +489,7 @@
   <div class="ticker-inner" id="tickerText">
     ⚡ Loading latest transfer news for Galatasaray and Liverpool… &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     🔴 GS — LFC Transfer Hub &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    📡 Powered by live web search &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    📡 Powered by live Google News feeds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </div>
 </div>
 
@@ -781,6 +781,61 @@
     document.getElementById('countBadge').textContent = 'Error';
   }
 
+  // ── Resilient feed fetching (multi-proxy fallback) ─────────────────
+  function parseDate(s) {
+    if (!s) return new Date();
+    var d = new Date(s);
+    if (!isNaN(d.getTime())) return d;
+    d = new Date(String(s).replace(' ', 'T') + 'Z');
+    if (!isNaN(d.getTime())) return d;
+    return new Date();
+  }
+
+  function parseRssXml(xmlStr) {
+    var out = [];
+    try {
+      var doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
+      var nodes = doc.querySelectorAll('item');
+      nodes.forEach(function(n) {
+        var get = function(tag) { var el = n.querySelector(tag); return el ? el.textContent : ''; };
+        out.push({ title: get('title'), link: get('link'), description: get('description'), pubDate: get('pubDate') });
+      });
+    } catch (e) { /* malformed XML — return whatever parsed */ }
+    return out;
+  }
+
+  // Tries rss2json first (clean JSON), then raw-XML CORS proxies as fallbacks.
+  async function fetchFeedItems(feedUrl) {
+    // 1) rss2json — easy JSON, but throttled on the free tier
+    try {
+      var r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl));
+      if (r.ok) {
+        var d = await r.json();
+        if (d.status === 'ok' && d.items && d.items.length) {
+          return d.items.map(function(it) {
+            return { title: it.title || '', link: it.link || '', description: it.description || '', pubDate: it.pubDate || '' };
+          });
+        }
+      }
+    } catch (e) { /* fall through to raw proxies */ }
+
+    // 2) Raw-XML proxies — used when rss2json is down or rate-limited
+    var rawProxies = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?url='
+    ];
+    for (var p = 0; p < rawProxies.length; p++) {
+      try {
+        var rr = await fetch(rawProxies[p] + encodeURIComponent(feedUrl));
+        if (!rr.ok) continue;
+        var xml = await rr.text();
+        var items = parseRssXml(xml);
+        if (items.length) return items;
+      } catch (e) { /* try next proxy */ }
+    }
+    throw new Error('no feed source responded');
+  }
+
   // ── Main load function (RSS keyless) ───────────────────────────────────────
   async function loadNews() {
     const btn = document.getElementById('refreshBtn');
@@ -825,18 +880,15 @@
 
     try {
       await Promise.all(['gs', 'lfc'].map(async function(club) {
-        var feedUrl = feeds[club];
-        var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl);
-        
-        var res = await fetch(apiUrl);
-        if (!res.ok) throw new Error('CORS request failed');
-        
-        var data = await res.json();
-        if (data.status !== 'ok') throw new Error(data.message || 'API error');
-        
-        var items = data.items || [];
-        
-        for (var i = 0; i < Math.min(items.length, 8); i++) {
+        var items;
+        try {
+          items = await fetchFeedItems(feeds[club]);
+        } catch (e) {
+          console.error('[TransferHub]', club, e);
+          return; // one club failing must not blank the other
+        }
+
+        for (var i = 0; i < Math.min(items.length, 12); i++) {
           var item = items[i];
           var rawTitle = item.title || '';
           var title = rawTitle;
@@ -848,7 +900,7 @@
             title = rawTitle.substring(0, dashIndex);
           }
 
-          var dateObj = new Date(item.pubDate.replace(' ', 'T') + 'Z');
+          var dateObj = parseDate(item.pubDate);
           var dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
           var category = classifyCategory(title);
@@ -891,121 +943,9 @@
         }
       }));
 
-      // Curated recent insider rumours featuring global and Turkish sources
-      var todayStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-      var yesterdayObj = new Date(); yesterdayObj.setDate(yesterdayObj.getDate() - 1);
-      var yesterdayStr = yesterdayObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-      var twoDaysAgoObj = new Date(); twoDaysAgoObj.setDate(twoDaysAgoObj.getDate() - 2);
-      var twoDaysAgoStr = twoDaysAgoObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-      var localRumours = [
-        {
-          club: 'gs',
-          title: 'Samiyen Haber: Galatasaray in advanced negotiations for a top-tier midfielder',
-          summary: 'According to @_samiyenhaber, Galatasaray has initiated direct contact with the player\'s representative. Talks are progressing positively.',
-          source: 'Samiyen Haber',
-          date: todayStr,
-          category: 'rumour',
-          players: [{ name: 'İlkay Gündoğan' }, { name: 'Mauro Icardi' }],
-          twitter: '@_samiyenhaber',
-          instagram: null,
-          insider: 'Samiyen Haber',
-          url: 'https://x.com/_samiyenhaber'
-        },
-        {
-          club: 'gs',
-          title: 'Ertan Süzgün: Galatasaray reaches personal terms verbal agreement with winger Jhon Arias',
-          summary: 'Ertan Süzgün reports that Galatasaray has agreed personal terms with Jhon Arias. The club is now negotiating a loan-to-buy fee structure with Fluminense.',
-          source: 'Ertan Süzgün',
-          date: todayStr,
-          category: 'rumour',
-          players: [{ name: 'Jhon Arias' }, { name: 'Victor Osimhen' }],
-          twitter: '@ertansuzgun',
-          instagram: null,
-          insider: 'Ertan Süzgün',
-          url: 'https://x.com/ertansuzgun'
-        },
-        {
-          club: 'gs',
-          title: 'Haluk Yürekli: Galatasaray transfer budget and squad planning details revealed',
-          summary: 'Haluk Yürekli discusses potential departures and incoming priorities on the latest stream. A central midfielder and right-back are requested.',
-          source: 'Haluk Yürekli',
-          date: yesterdayStr,
-          category: 'rumour',
-          players: [{ name: 'Barış Alper Yılmaz' }, { name: 'Lucas Torreira' }],
-          twitter: '@Haluk_Yurekli',
-          instagram: null,
-          insider: 'Haluk Yürekli',
-          url: 'https://x.com/Haluk_Yurekli'
-        },
-        {
-          club: 'gs',
-          title: 'Forza Cimbom: Galatasaray board preparing official bid for defender Davinson Sánchez',
-          summary: 'According to @forzacimbom, Galatasaray is tracking a German league centre-back. An official bid is expected to be submitted early next week.',
-          source: 'Forza Cimbom',
-          date: twoDaysAgoStr,
-          category: 'rumour',
-          players: [{ name: 'Davinson Sánchez' }, { name: 'Victor Nelsson' }],
-          twitter: '@forzacimbom',
-          instagram: null,
-          insider: 'Forza Cimbom',
-          url: 'https://x.com/forzacimbom'
-        },
-        {
-          club: 'lfc',
-          title: 'Fabrizio Romano: Liverpool complete €50m midfielder Martin Zubimendi signing, here we go!',
-          summary: 'Fabrizio Romano: Here we go! Contract is fully agreed and signed with Martin Zubimendi. Medical tests completed. Official club statement coming shortly.',
-          source: 'Fabrizio Romano',
-          date: todayStr,
-          category: 'confirmed',
-          players: [{ name: 'Martin Zubimendi' }, { name: 'Alexis Mac Allister' }],
-          twitter: '@FabrizioRomano',
-          instagram: null,
-          insider: 'Fabrizio Romano',
-          url: 'https://x.com/FabrizioRomano'
-        },
-        {
-          club: 'lfc',
-          title: 'David Ornstein: Liverpool set to agree long-term contract extension with key defender',
-          summary: 'David Ornstein reports that Liverpool is close to finalizing a five-year contract extension with their star defender. Negotiations are in the final stages.',
-          source: 'David Ornstein',
-          date: todayStr,
-          category: 'confirmed',
-          players: [{ name: 'Virgil van Dijk' }, { name: 'Trent Alexander-Arnold' }],
-          twitter: '@David_Ornstein',
-          instagram: null,
-          insider: 'David Ornstein',
-          url: 'https://x.com/David_Ornstein'
-        },
-        {
-          club: 'lfc',
-          title: 'Florian Plettenberg: Liverpool targeting Jeremie Frimpong for summer transfer window',
-          summary: 'Florian Plettenberg reports that Liverpool is actively scouting Jeremie Frimpong. The Bundesliga side is demanding around €60m to sell.',
-          source: 'Florian Plettenberg',
-          date: yesterdayStr,
-          category: 'rumour',
-          players: [{ name: 'Jeremie Frimpong' }, { name: 'Joshua Kimmich' }],
-          twitter: '@Plettigoal',
-          instagram: null,
-          insider: 'Florian Plettenberg',
-          url: 'https://x.com/Plettigoal'
-        },
-        {
-          club: 'lfc',
-          title: 'Santi Aouna: Liverpool winger Luis Díaz holding direct talks with foreign champions',
-          summary: 'According to @Santi_J_FM, personal terms are in negotiation for Luis Díaz but clubs have not reached any agreement on a transfer fee yet.',
-          source: 'Santi Aouna',
-          date: twoDaysAgoStr,
-          category: 'departure',
-          players: [{ name: 'Luis Díaz' }, { name: 'Mohamed Salah' }],
-          twitter: '@Santi_J_FM',
-          instagram: null,
-          insider: 'Santi Aouna',
-          url: 'https://x.com/Santi_J_FM'
-        }
-      ];
-
-      results = localRumours.concat(results);
+      if (!results.length) {
+        throw new Error('Could not load live transfer news from any source right now. The free feed proxies may be rate-limited or temporarily blocked — please hit Refresh in a moment.');
+      }
 
       allItems = results;
       renderFeed();
