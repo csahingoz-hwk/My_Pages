@@ -456,6 +456,74 @@
   }
   .rel-dot.on { background: #22c55e; }
   .rel-dot.off { background: rgba(255,255,255,0.1); }
+
+  /* ── INSIDER DESK ── */
+  .insider-desk { padding: 2.2rem 2rem 0.5rem; border-top: 1px solid var(--border); }
+  .insider-desk-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em;
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px;
+  }
+  .insider-desk-sub {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.82rem; color: var(--muted);
+    letter-spacing: 0.02em; margin-bottom: 1.6rem; max-width: 780px; line-height: 1.55;
+  }
+  .insider-group { margin-bottom: 1.8rem; }
+  .insider-group-head {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--text); margin-bottom: 1rem;
+  }
+  .insider-group-head .gl-line { flex: 1; height: 1px; background: var(--border); }
+  .insider-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 12px; }
+  .insider-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; position: relative; overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .insider-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.16); }
+  .insider-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .insider-card.global::before { background: linear-gradient(to bottom, #1da1f2, #6366f1); }
+  .insider-card.gs::before { background: linear-gradient(to bottom, var(--gs-red), var(--gs-gold)); }
+  .insider-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .insider-av {
+    width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+    background: var(--surface); border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .insider-av-fallback {
+    width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem;
+    color: #fff; flex-shrink: 0; letter-spacing: 0.02em;
+  }
+  .insider-id { min-width: 0; }
+  .insider-name {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem;
+    line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .insider-handle { font-size: 0.74rem; color: var(--muted); }
+  .insider-beat { font-size: 0.77rem; color: #9898b0; line-height: 1.42; margin-bottom: 9px; min-height: 33px; }
+  .insider-meta-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .insider-region {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.64rem; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+    background: rgba(255,255,255,0.06); color: var(--muted);
+  }
+  .insider-actions { display: flex; gap: 8px; }
+  .insider-btn {
+    flex: 1; text-align: center; text-decoration: none;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.76rem; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 9px 6px; border-radius: 7px;
+    border: 1px solid var(--border); color: var(--text); transition: all 0.15s;
+  }
+  .insider-btn:hover { border-color: rgba(255,255,255,0.3); }
+  .insider-btn.primary { background: rgba(29,161,242,0.12); border-color: rgba(29,161,242,0.3); color: #4fb3f7; }
+  .insider-btn.primary:hover { background: rgba(29,161,242,0.2); }
+  .insider-btn.primary.gs { background: rgba(245,168,0,0.12); border-color: rgba(245,168,0,0.3); color: var(--gs-gold); }
+  .insider-btn.primary.gs:hover { background: rgba(245,168,0,0.2); }
+  @media (max-width: 640px) {
+    .insider-desk { padding: 1.6rem 1rem 0.5rem; }
+    .insider-grid { grid-template-columns: 1fr; }
+  }
+
 </style>
 </head>
 <body>
@@ -549,6 +617,23 @@
     </div>
   </div>
 </div>
+
+<!-- INSIDER DESK -->
+<section class="insider-desk">
+  <div class="insider-desk-title">📡 Muhabir Masası <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;color:var(--muted);letter-spacing:0.12em;">/ INSIDER DESK</span></div>
+  <div class="insider-desk-sub">
+    Güvenilir transfer kaynakları. Karta dokun → muhabirin <strong>canlı X profili</strong> ya da <strong>son transfer tweetleri</strong> (filtrelenmiş arama, canlı) açılır.
+    Neden gömülü değil: X artık zaman tünellerini yalnızca giriş yapmış kullanıcılara gösteriyor, yani tweet'i sayfaya gömmek yerine tek dokunuşla X'e yönlendiriyoruz — mobilde uygulamada açıldığı için daha hızlı ve hep çalışır.
+  </div>
+  <div class="insider-group">
+    <div class="insider-group-head">🌍 Global <span class="gl-line"></span></div>
+    <div class="insider-grid" id="insidersGlobal"></div>
+  </div>
+  <div class="insider-group">
+    <div class="insider-group-head">🦁 Galatasaray <span class="gl-line"></span></div>
+    <div class="insider-grid" id="insidersGs"></div>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -781,6 +866,79 @@
     document.getElementById('countBadge').textContent = 'Error';
   }
 
+  // ── Insider directory (curated, with live deep-links) ──────────────────────
+  const INSIDERS_DIRECTORY = {
+    global: [
+      { name: 'Florian Plettenberg', handle: 'Plettigoal',     beat: 'Sky Sport Germany — Bundesliga & global moves',        region: 'Bundesliga' },
+      { name: 'David Ornstein',      handle: 'David_Ornstein',  beat: 'The Athletic — Premier League, big-money & done deals', region: 'EPL' },
+      { name: 'Ben Jacobs',          handle: 'JacobsBen',       beat: 'CBS / GMS — Saudi Pro League & global market',          region: 'Global' },
+      { name: 'Santi Aouna',         handle: 'Santi_J_FM',      beat: 'Foot Mercato — Ligue 1 & France',                       region: 'Ligue 1' },
+      { name: 'Fabrice Hawkins',     handle: 'FabriceHawkins',  beat: 'RMC Sport — Ligue 1 & France',                          region: 'Ligue 1' },
+      { name: 'Sam Lee',             handle: 'SamLee',          beat: 'The Athletic — Manchester City & EPL',                  region: 'EPL' },
+      { name: 'James Pearce',        handle: 'JamesPearceLFC',  beat: 'The Athletic — Liverpool FC beat',                      region: 'LFC' },
+      { name: 'Marco Conterio',      handle: 'marcoconterio',   beat: 'Tuttomercatoweb — Serie A',                             region: 'Serie A' }
+    ],
+    gs: [
+      { name: 'Samiyen Haber',  handle: '_samiyenhaber', beat: 'GS transfer aktarımı',                                  region: 'GS' },
+      { name: 'Ertan Süzgün',   handle: 'ertansuzgun',   beat: 'Muhabir — BJK ağırlıklı, GS haberlerinde isabetli',     region: 'GS' },
+      { name: 'Forza Cimbom',   handle: 'forzacimbom',   beat: 'GS haber / aktarım',                                    region: 'GS' },
+      { name: 'Haluk Yürekli',  handle: 'Haluk_Yurekli', beat: 'Muhabir / yayıncı — GS gündemi',                        region: 'GS' }
+    ]
+  };
+
+  function insiderSearchUrl(handle) {
+    var q = 'from:' + handle + ' (transfer OR deal OR "here we go" OR agreement OR signing OR anlaşma OR imza OR bonservis)';
+    return 'https://x.com/search?q=' + encodeURIComponent(q) + '&f=live';
+  }
+
+  function avatarColor(name) {
+    var palette = ['#1da1f2','#6366f1','#22c55e','#f5a800','#e8102a','#c084fc','#fb923c','#ec4899'];
+    var sum = 0; for (var i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+    return palette[sum % palette.length];
+  }
+
+  function insiderAvatarFail(img, initials, color) {
+    var d = document.createElement('div');
+    d.className = 'insider-av-fallback';
+    d.style.background = color;
+    d.textContent = initials;
+    img.replaceWith(d);
+  }
+
+  function renderInsiderCard(p, group) {
+    var rel = getReliability(p.name);
+    var initials = p.name.split(' ').map(function(w){ return w[0]; }).join('').substring(0,2).toUpperCase();
+    var primaryGsCls = group === 'gs' ? ' gs' : '';
+    return `
+    <div class="insider-card ${group}">
+      <div class="insider-top">
+        <img class="insider-av" src="https://unavatar.io/twitter/${p.handle}?fallback=false"
+             alt="${p.name}" loading="lazy"
+             onerror="insiderAvatarFail(this, '${initials}', '${avatarColor(p.name)}')">
+        <div class="insider-id">
+          <div class="insider-name">${p.name}</div>
+          <div class="insider-handle">@${p.handle}</div>
+        </div>
+      </div>
+      <div class="insider-beat">${p.beat}</div>
+      <div class="insider-meta-row">
+        <span class="insider-region">${p.region}</span>
+        ${reliabilityDots(rel)}
+      </div>
+      <div class="insider-actions">
+        <a class="insider-btn" href="https://x.com/${p.handle}" target="_blank" rel="noopener">Profil ↗</a>
+        <a class="insider-btn primary${primaryGsCls}" href="${insiderSearchUrl(p.handle)}" target="_blank" rel="noopener">Transfer tweetleri ↗</a>
+      </div>
+    </div>`;
+  }
+
+  function renderInsiders() {
+    document.getElementById('insidersGlobal').innerHTML =
+      INSIDERS_DIRECTORY.global.map(function(p){ return renderInsiderCard(p, 'global'); }).join('');
+    document.getElementById('insidersGs').innerHTML =
+      INSIDERS_DIRECTORY.gs.map(function(p){ return renderInsiderCard(p, 'gs'); }).join('');
+  }
+
   // ── Resilient feed fetching (multi-proxy fallback) ─────────────────
   function parseDate(s) {
     if (!s) return new Date();
@@ -963,6 +1121,7 @@
 
   // Boot — auto-loads keyless
   window.addEventListener('DOMContentLoaded', () => {
+    renderInsiders();
     loadNews();
   });
 </script>
