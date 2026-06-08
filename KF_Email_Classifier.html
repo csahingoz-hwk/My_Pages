@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KF Email Classifier</title>
+  <!-- MSAL.js for Microsoft OAuth -->
+  <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+  <style>
+    :root {
+      --kf-blue: #002855;
+      --kf-gold: #C8A96E;
+      --kf-light: #f4f6f9;
+      --kf-border: #dde2ea;
+      --urgent: #c0392b;
+      --action: #e67e22;
+      --info: #2980b9;
+      --fyi: #27ae60;
+      --meeting: #8e44ad;
+      --external: #16a085;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--kf-light);
+      color: #222;
+      min-height: 100vh;
+    }
+    header {
+      background: var(--kf-blue);
+      color: #fff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    header .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; }
+    header .logo span { color: var(--kf-gold); }
+    header .subtitle { font-size: 0.85rem; opacity: 0.75; margin-top: 2px; }
+    #auth-section {
+      max-width: 500px;
+      margin: 80px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px 36px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,40,85,0.10);
+    }
+    #auth-section h2 { color: var(--kf-blue); margin-bottom: 10px; }
+    #auth-section p { color: #555; margin-bottom: 24px; font-size: 0.95rem; line-height: 1.6; }
+    .config-notice {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      font-size: 0.82rem;
+      color: #7a5c00;
+      text-align: left;
+    }
+    .config-notice strong { display: block; margin-bottom: 4px; }
+    .config-notice code { background: #ffefc0; padding: 1px 5px; border-radius: 3px; font-size: 0.8rem; }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 7px;
+      font-size: 1rem;
+      padding: 12px 28px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:active { transform: scale(0.97); }
+    #btn-signin {
+      background: var(--kf-blue);
+      color: #fff;
+      font-weight: 600;
+      width: 100%;
+    }
+    #btn-signin:hover { background: #003a75; }
+    #btn-signout {
+      background: transparent;
+      color: #aaa;
+      border: 1px solid #ddd;
+      font-size: 0.82rem;
+      padding: 7px 16px;
+    }
+    #btn-signout:hover { background: #f5f5f5; color: #555; }
+    #btn-refresh {
+      background: var(--kf-gold);
+      color: var(--kf-blue);
+      font-weight: 600;
+      padding: 10px 22px;
+      font-size: 0.92rem;
+    }
+    #btn-refresh:hover { background: #b8954e; }
+    #main-section { display: none; padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .topbar .welcome { font-size: 1rem; color: var(--kf-blue); font-weight: 600; }
+    .topbar .last-sync { font-size: 0.78rem; color: #999; }
+    .stats-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 130px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px 18px;
+      text-align: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      border-top: 4px solid #ccc;
+    }
+    .stat-card .count { font-size: 2rem; font-weight: 700; }
+    .stat-card .label { font-size: 0.75rem; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card.urgent { border-color: var(--urgent); }
+    .stat-card.urgent .count { color: var(--urgent); }
+    .stat-card.action { border-color: var(--action); }
+    .stat-card.action .count { color: var(--action); }
+    .stat-card.meeting { border-color: var(--meeting); }
+    .stat-card.meeting .count { color: var(--meeting); }
+    .stat-card.info { border-color: var(--info); }
+    .stat-card.info .count { color: var(--info); }
+    .stat-card.fyi { border-color: var(--fyi); }
+    .stat-card.fyi .count { color: var(--fyi); }
+    .stat-card.external { border-color: var(--external); }
+    .stat-card.external .count { color: var(--external); }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      border-radius: 20px;
+      background: #fff;
+      border: 1.5px solid var(--kf-border);
+      color: #444;
+      font-weight: 500;
+    }
+    .filter-btn.active { background: var(--kf-blue); color: #fff; border-color: var(--kf-blue); }
+    .filter-btn:hover:not(.active) { border-color: var(--kf-blue); color: var(--kf-blue); }
+
+    #email-list { display: flex; flex-direction: column; gap: 10px; }
+    .email-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px 20px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+      border-left: 5px solid #ccc;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: box-shadow 0.15s;
+    }
+    .email-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.11); }
+    .email-card.urgent { border-color: var(--urgent); }
+    .email-card.action { border-color: var(--action); }
+    .email-card.meeting { border-color: var(--meeting); }
+    .email-card.info { border-color: var(--info); }
+    .email-card.fyi { border-color: var(--fyi); }
+    .email-card.external { border-color: var(--external); }
+    .email-badge {
+      flex-shrink: 0;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fff;
+      margin-top: 2px;
+    }
+    .badge-urgent { background: var(--urgent); }
+    .badge-action { background: var(--action); }
+    .badge-meeting { background: var(--meeting); }
+    .badge-info { background: var(--info); }
+    .badge-fyi { background: var(--fyi); }
+    .badge-external { background: var(--external); }
+    .email-body { flex: 1; min-width: 0; }
+    .email-subject {
+      font-weight: 600;
+      font-size: 0.97rem;
+      color: #1a1a2e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .email-meta {
+      font-size: 0.78rem;
+      color: #888;
+      margin-top: 3px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .email-preview {
+      font-size: 0.82rem;
+      color: #555;
+      margin-top: 6px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .email-reason {
+      font-size: 0.74rem;
+      color: #999;
+      margin-top: 5px;
+      font-style: italic;
+    }
+    #loading { text-align: center; padding: 60px 0; color: #888; font-size: 1rem; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 4px solid #e0e0e0;
+      border-top-color: var(--kf-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #error-msg {
+      background: #fff0f0;
+      border: 1px solid #ffbcbc;
+      border-radius: 8px;
+      padding: 14px 18px;
+      color: #c0392b;
+      margin-bottom: 16px;
+      display: none;
+      font-size: 0.88rem;
+    }
+    .empty-state { text-align: center; padding: 50px 0; color: #aaa; font-size: 0.95rem; }
+    #client-id-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #dde2ea;
+      border-radius: 7px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      color: #222;
+    }
+    #client-id-input:focus { outline: none; border-color: var(--kf-blue); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Korn<span>Ferry</span> &nbsp;|&nbsp; Email Classifier</div>
+    <div class="subtitle">Daily Unread Email Intelligence</div>
+  </div>
+  <div id="header-actions"></div>
+</header>
+
+<!-- Auth / Config Section -->
+<div id="auth-section">
+  <h2>Connect Your Outlook</h2>
+  <p>Sign in with your KornFerry Microsoft account to fetch and classify today's unread emails automatically.</p>
+
+  <div class="config-notice">
+    <strong>⚙️ First-time setup required</strong>
+    You need an Azure AD App (Client) ID. Ask your IT admin or self-register at
+    <code>portal.azure.com</code> → App registrations → New → add
+    <code>https://&lt;your-page-url&gt;</code> as a Redirect URI (SPA).
+    Required scopes: <code>Mail.Read</code>, <code>User.Read</code>.
+    <br/><br/>
+    If you already have a Client ID, paste it below:
+  </div>
+
+  <input type="text" id="client-id-input" placeholder="Paste Azure App (Client) ID here…" />
+  <button id="btn-signin" onclick="handleSignIn()">🔑 Sign in with Microsoft</button>
+</div>
+
+<!-- Main Dashboard -->
+<div id="main-section">
+  <div class="topbar">
+    <div>
+      <div class="welcome" id="user-name">Loading…</div>
+      <div class="last-sync" id="last-sync"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button id="btn-refresh" onclick="loadEmails()">↻ Refresh</button>
+      <button id="btn-signout" onclick="handleSignOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" onclick="filterEmails('all', this)">All</button>
+    <button class="filter-btn" onclick="filterEmails('urgent', this)">🔴 Urgent</button>
+    <button class="filter-btn" onclick="filterEmails('action', this)">🟠 Action Required</button>
+    <button class="filter-btn" onclick="filterEmails('meeting', this)">🟣 Meeting</button>
+    <button class="filter-btn" onclick="filterEmails('info', this)">🔵 Info / Update</button>
+    <button class="filter-btn" onclick="filterEmails('fyi', this)">🟢 FYI</button>
+    <button class="filter-btn" onclick="filterEmails('external', this)">🩵 External</button>
+  </div>
+
+  <div id="loading" style="display:none;">
+    <div class="spinner"></div>
+    Fetching unread emails…
+  </div>
+
+  <div id="email-list"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// CONFIG – filled by user input or localStorage
+// ─────────────────────────────────────────────
+const TENANT = 'common'; // Use 'common' for multi-tenant; replace with your KF tenant GUID if needed
+let CLIENT_ID = localStorage.getItem('kf_client_id') || '';
+let msalInstance = null;
+let allEmails = [];
+
+const SCOPES = ['Mail.Read', 'User.Read'];
+
+// Pre-fill saved client ID
+if (CLIENT_ID) document.getElementById('client-id-input').value = CLIENT_ID;
+
+function getMsalInstance(clientId) {
+  return new msal.PublicClientApplication({
+    auth: {
+      clientId,
+      authority: `https://login.microsoftonline.com/${TENANT}`,
+      redirectUri: window.location.href.split('?')[0],
+    },
+    cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false },
+  });
+}
+
+// ─────────────────────────────────────────────
+// CLASSIFICATION ENGINE
+// ─────────────────────────────────────────────
+const RULES = {
+  urgent: {
+    subjects: ['urgent', 'asap', 'immediate', 'critical', 'emergency', 'action required today', 'deadline today', 'overdue', 'past due'],
+    body: ['urgent', 'asap', 'immediately', 'critical', 'emergency'],
+    reason: 'Contains urgent/critical keywords',
+  },
+  meeting: {
+    subjects: ['meeting', 'invite', 'calendar', 'sync', 'call', 'webinar', 'interview', 'appointment', 'zoom', 'teams meeting', 'conference'],
+    body: ['meeting request', 'calendar invite', 'zoom link', 'teams meeting', 'join the call'],
+    reason: 'Looks like a meeting or calendar invite',
+  },
+  action: {
+    subjects: ['action required', 'please review', 'approval needed', 'sign off', 'feedback requested', 'response needed', 'please respond', 'follow up', 'follow-up', 'reminder', 'due date', 'deadline'],
+    body: ['please review', 'your approval', 'please respond', 'action needed', 'required by', 'due by'],
+    reason: 'Requires your action or response',
+  },
+  external: {
+    domains: [], // filled dynamically for non-kornferry senders
+    reason: 'Sent from outside KornFerry',
+  },
+  info: {
+    subjects: ['update', 'announcement', 'newsletter', 'report', 'summary', 'weekly', 'monthly', 'quarterly', 'results', 'status update', 'project update'],
+    body: ['for your information', 'please be informed', 'we are pleased to announce', 'update on'],
+    reason: 'General update or informational email',
+  },
+  fyi: {
+    subjects: ['fyi', 'for your information', 'no action', 'no action needed', 'heads up'],
+    body: ['no action required', 'fyi', 'just a heads up'],
+    reason: 'FYI – no action needed',
+  },
+};
+
+function classify(email) {
+  const sub = (email.subject || '').toLowerCase();
+  const body = (email.bodyPreview || '').toLowerCase();
+  const sender = (email.from?.emailAddress?.address || '').toLowerCase();
+  const isInternal = sender.includes('kornferry') || sender.includes('korn-ferry');
+
+  const match = (list) => list && list.some(k => sub.includes(k) || body.includes(k));
+
+  if (match(RULES.urgent.subjects) || match(RULES.urgent.body))
+    return { cat: 'urgent', reason: RULES.urgent.reason };
+
+  if (match(RULES.meeting.subjects) || match(RULES.meeting.body) || email.hasAttachments && sub.includes('invite'))
+    return { cat: 'meeting', reason: RULES.meeting.reason };
+
+  if (match(RULES.action.subjects) || match(RULES.action.body))
+    return { cat: 'action', reason: RULES.action.reason };
+
+  if (!isInternal)
+    return { cat: 'external', reason: `From: ${sender}` };
+
+  if (match(RULES.fyi.subjects) || match(RULES.fyi.body))
+    return { cat: 'fyi', reason: RULES.fyi.reason };
+
+  if (match(RULES.info.subjects) || match(RULES.info.body))
+    return { cat: 'info', reason: RULES.info.reason };
+
+  return { cat: 'info', reason: 'General email' };
+}
+
+// ─────────────────────────────────────────────
+// AUTH
+// ─────────────────────────────────────────────
+async function handleSignIn() {
+  const inputId = document.getElementById('client-id-input').value.trim();
+  if (!inputId) {
+    alert('Please enter your Azure App (Client) ID first.');
+    return;
+  }
+  CLIENT_ID = inputId;
+  localStorage.setItem('kf_client_id', CLIENT_ID);
+  msalInstance = getMsalInstance(CLIENT_ID);
+
+  // Handle redirect response first
+  try {
+    await msalInstance.handleRedirectPromise();
+  } catch (e) { console.warn(e); }
+
+  try {
+    await msalInstance.loginPopup({ scopes: SCOPES });
+    showDashboard();
+  } catch (err) {
+    alert('Sign-in failed: ' + (err.message || err));
+  }
+}
+
+async function handleSignOut() {
+  if (!msalInstance) return;
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length) {
+    await msalInstance.logoutPopup({ account: accounts[0] });
+  }
+  document.getElementById('auth-section').style.display = 'block';
+  document.getElementById('main-section').style.display = 'none';
+  document.getElementById('header-actions').innerHTML = '';
+}
+
+async function getToken() {
+  const accounts = msalInstance.getAllAccounts();
+  if (!accounts.length) throw new Error('No signed-in account');
+  try {
+    const result = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+    return result.accessToken;
+  } catch {
+    const result = await msalInstance.acquireTokenPopup({ scopes: SCOPES });
+    return result.accessToken;
+  }
+}
+
+// ─────────────────────────────────────────────
+// GRAPH API
+// ─────────────────────────────────────────────
+async function graphGet(url, token) {
+  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+  if (!res.ok) throw new Error(`Graph API error ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+async function loadEmails() {
+  showLoading(true);
+  clearError();
+  try {
+    const token = await getToken();
+
+    // Get user profile
+    const me = await graphGet('https://graph.microsoft.com/v1.0/me', token);
+    document.getElementById('user-name').textContent = `👋 ${me.displayName}`;
+
+    // Today's date range (midnight to midnight)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    // Fetch up to 100 unread emails received today
+    const filter = encodeURIComponent(
+      `isRead eq false and receivedDateTime ge ${today.toISOString()} and receivedDateTime lt ${tomorrow.toISOString()}`
+    );
+    const select = 'subject,from,receivedDateTime,bodyPreview,hasAttachments,importance,isRead';
+    const url = `https://graph.microsoft.com/v1.0/me/messages?$filter=${filter}&$select=${select}&$top=100&$orderby=receivedDateTime desc`;
+
+    const data = await graphGet(url, token);
+    allEmails = (data.value || []).map(e => ({ ...e, classification: classify(e) }));
+
+    document.getElementById('last-sync').textContent = 'Last synced: ' + new Date().toLocaleTimeString();
+    renderStats(allEmails);
+    renderEmails(allEmails);
+  } catch (err) {
+    showError(err.message || String(err));
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function renderStats(emails) {
+  const counts = { urgent: 0, action: 0, meeting: 0, info: 0, fyi: 0, external: 0 };
+  emails.forEach(e => { if (counts[e.classification.cat] !== undefined) counts[e.classification.cat]++; });
+  const labels = { urgent: 'Urgent', action: 'Action Req.', meeting: 'Meeting', info: 'Info', fyi: 'FYI', external: 'External' };
+  document.getElementById('stats-row').innerHTML =
+    Object.entries(counts).map(([cat, n]) => `
+      <div class="stat-card ${cat}">
+        <div class="count">${n}</div>
+        <div class="label">${labels[cat]}</div>
+      </div>`).join('') +
+    `<div class="stat-card" style="border-color:#555">
+       <div class="count" style="color:#555">${emails.length}</div>
+       <div class="label">Total Unread</div>
+     </div>`;
+}
+
+function renderEmails(emails) {
+  const list = document.getElementById('email-list');
+  if (!emails.length) {
+    list.innerHTML = '<div class="empty-state">🎉 No unread emails in this category today!</div>';
+    return;
+  }
+  list.innerHTML = emails.map(e => {
+    const { cat, reason } = e.classification;
+    const from = e.from?.emailAddress?.name || e.from?.emailAddress?.address || 'Unknown';
+    const addr = e.from?.emailAddress?.address || '';
+    const time = new Date(e.receivedDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const imp = e.importance === 'high' ? ' ⚠️' : '';
+    return `
+      <div class="email-card ${cat}">
+        <span class="email-badge badge-${cat}">${cat}</span>
+        <div class="email-body">
+          <div class="email-subject">${escHtml(e.subject || '(No subject)')}${imp}</div>
+          <div class="email-meta">
+            <span>From: <strong>${escHtml(from)}</strong> &lt;${escHtml(addr)}&gt;</span>
+            <span>🕐 ${time}</span>
+            ${e.hasAttachments ? '<span>📎 Attachment</span>' : ''}
+          </div>
+          <div class="email-preview">${escHtml(e.bodyPreview || '')}</div>
+          <div class="email-reason">📌 ${escHtml(reason)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+let currentFilter = 'all';
+function filterEmails(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = cat === 'all' ? allEmails : allEmails.filter(e => e.classification.cat === cat);
+  renderEmails(filtered);
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showLoading(v) {
+  document.getElementById('loading').style.display = v ? 'block' : 'none';
+  document.getElementById('email-list').style.display = v ? 'none' : 'flex';
+}
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+function clearError() {
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+async function showDashboard() {
+  document.getElementById('auth-section').style.display = 'none';
+  document.getElementById('main-section').style.display = 'block';
+  await loadEmails();
+}
+
+// ─────────────────────────────────────────────
+// AUTO-RESUME: if already signed in, skip auth screen
+// ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  if (!CLIENT_ID) return;
+  msalInstance = getMsalInstance(CLIENT_ID);
+  try {
+    await msalInstance.handleRedirectPromise();
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length) showDashboard();
+  } catch (e) { console.warn(e); }
+});
+
+// ─────────────────────────────────────────────
+// DAILY AUTO-REFRESH (every 30 minutes while page is open)
+// ─────────────────────────────────────────────
+setInterval(() => {
+  if (document.getElementById('main-section').style.display !== 'none') {
+    loadEmails();
+  }
+}, 30 * 60 * 1000);
+</script>
+</body>
+</html>
