@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsibility Matrix — Option 1</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+
+  header {
+    background: #1a2340;
+    color: white;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: .03em; }
+  header small { font-size: .8rem; opacity: .65; display: block; margin-top: 2px; }
+
+  .view-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 16px 32px 0;
+  }
+  .tab {
+    padding: 8px 20px;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid #d0d5e0;
+    border-bottom: none;
+    background: #e4e8f0;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 500;
+    color: #555;
+    transition: background .15s;
+  }
+  .tab.active { background: white; color: #1a2340; font-weight: 700; }
+  .tab:hover:not(.active) { background: #d8dce8; }
+
+  .panel {
+    display: none;
+    background: white;
+    border: 1px solid #d0d5e0;
+    border-radius: 0 6px 6px 6px;
+    margin: 0 32px 32px;
+    padding: 24px;
+    overflow-x: auto;
+  }
+  .panel.active { display: block; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .82rem;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    transition: border-color .15s;
+  }
+  .legend-item.dimmed { opacity: .3; }
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .legend-label { font-weight: 600; }
+
+  /* ── Filters ── */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+    align-items: center;
+  }
+  .filters label { font-size: .82rem; font-weight: 600; color: #555; }
+  .filters select, .filters input {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: .82rem;
+  }
+  .btn-reset {
+    padding: 5px 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: .82rem;
+    cursor: pointer;
+  }
+
+  /* ── Matrix Table (View 1) ── */
+  .matrix-table { border-collapse: collapse; width: 100%; font-size: .8rem; }
+  .matrix-table th {
+    background: #1a2340;
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    white-space: nowrap;
+    font-size: .75rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .matrix-table th:first-child { min-width: 220px; }
+  .matrix-table td {
+    padding: 7px 10px;
+    border: 1px solid #e8eaf0;
+    vertical-align: middle;
+    white-space: nowrap;
+    transition: opacity .2s;
+  }
+  .matrix-table tr:hover td { background: rgba(0,0,0,.03); }
+  .matrix-table .task-cell {
+    font-weight: 500;
+    color: #222;
+    white-space: normal;
+    max-width: 260px;
+    background: #fafbfc;
+  }
+  .cell-na { color: #bbb; font-size: .75rem; }
+  .person-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 600;
+    margin: 1px 2px;
+    color: white;
+    white-space: nowrap;
+  }
+  .matrix-table tr.hidden { display: none; }
+
+  /* ── Heatmap (View 2) ── */
+  .heatmap-wrap { overflow-x: auto; }
+  .heatmap-table { border-collapse: collapse; font-size: .85rem; }
+  .heatmap-table th {
+    background: #1a2340;
+    color: white;
+    padding: 10px 16px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .heatmap-table td {
+    padding: 14px 20px;
+    border: 2px solid white;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    min-width: 90px;
+    position: relative;
+    cursor: default;
+  }
+  .heatmap-table td.person-header {
+    text-align: left;
+    font-size: .85rem;
+    font-weight: 700;
+    color: white;
+    padding: 10px 16px;
+    white-space: nowrap;
+  }
+  .heatmap-table td small {
+    display: block;
+    font-size: .7rem;
+    font-weight: 400;
+    opacity: .75;
+    margin-top: 2px;
+  }
+  .heatmap-table td.zero { background: #f0f2f5; color: #bbb; font-size: .85rem; }
+
+  .heatmap-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a2340;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 400;
+    z-index: 10;
+    white-space: nowrap;
+    min-width: 160px;
+    text-align: left;
+    pointer-events: none;
+  }
+  .heatmap-table td:hover .heatmap-tooltip { display: block; }
+
+  /* ── Swimlane (View 3) ── */
+  .swimlane-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .swim-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  }
+  .swim-header {
+    padding: 14px 18px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .swim-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .swim-body { background: white; padding: 16px; }
+  .swim-region { margin-bottom: 12px; }
+  .swim-region-title {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #eee;
+  }
+  .swim-task {
+    font-size: .8rem;
+    padding: 4px 0;
+    color: #333;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .swim-task::before {
+    content: '▸';
+    color: #aaa;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .swim-stat {
+    font-size: .75rem;
+    opacity: .8;
+    margin-left: 8px;
+  }
+  .swim-total {
+    font-size: .78rem;
+    background: rgba(255,255,255,.25);
+    border-radius: 20px;
+    padding: 2px 10px;
+    margin-left: auto;
+  }
+
+  /* scrollable panel */
+  #panel-matrix { max-height: 75vh; overflow-y: auto; padding: 0; }
+  #panel-matrix .inner { padding: 24px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Responsibility Matrix — Option 1</h1>
+    <small>Finance Operations · Regional Coverage</small>
+  </div>
+  <div class="legend" id="legend"></div>
+</header>
+
+<div class="view-tabs">
+  <div class="tab active" onclick="switchTab('matrix')">Color-coded Matrix</div>
+  <div class="tab" onclick="switchTab('heatmap')">Workload Heatmap</div>
+  <div class="tab" onclick="switchTab('swimlane')">Person Swimlanes</div>
+</div>
+
+<!-- VIEW 1: Color-coded Matrix -->
+<div class="panel active" id="panel-matrix">
+  <div class="inner">
+    <div class="filters">
+      <label>Filter by person:</label>
+      <select id="filter-person" onchange="filterMatrix()">
+        <option value="">All</option>
+      </select>
+      <label>Region:</label>
+      <select id="filter-region" onchange="filterMatrix()">
+        <option value="">All</option>
+      </select>
+      <label>Search task:</label>
+      <input type="text" id="filter-search" placeholder="type to search…" oninput="filterMatrix()">
+      <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    </div>
+    <table class="matrix-table" id="matrix-table"></table>
+  </div>
+</div>
+
+<!-- VIEW 2: Heatmap -->
+<div class="panel" id="panel-heatmap">
+  <p style="font-size:.82rem;color:#666;margin-bottom:16px;">Number of tasks owned per person per region. Hover a cell to see the task list.</p>
+  <div class="heatmap-wrap">
+    <table class="heatmap-table" id="heatmap-table"></table>
+  </div>
+</div>
+
+<!-- VIEW 3: Swimlanes -->
+<div class="panel" id="panel-swimlane">
+  <p style="font-size:.82rem;color:#666;margin-bottom:16px;">Each card groups all tasks and regions owned by that person.</p>
+  <div class="swimlane-grid" id="swimlane-grid"></div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const regions = [
+  'UAE_USD (AEX1 & AE41)',
+  'UAE_AED (AE53)',
+  'QATAR (QA41)',
+  'Saudi Arabia USD (SA41, SA90)',
+  'Saudi Arabia SAR (SA21)',
+  'Kuwait PE (AE41)',
+  'Oman PE (AE41)',
+  'KSA PE (AE41 & AEX1)',
+];
+const regionKeys = ['UAE_USD','UAE_AED','QATAR','SA_USD','SA_SAR','Kuwait','Oman','KSA'];
+
+const raw = [
+  {task:'Bond Applications and follow-up with bank contacts',     v:['Civan D.','N/A','N/A','N/A','N/A','N/A','N/A','N/A']},
+  {task:'Letters of Credit and GL 143100 reconciliations',       v:['Sevde N.','N/A','N/A','N/A','N/A','N/A','N/A','N/A']},
+  {task:'Payroll review and payments',                            v:['Sevde N.','N/A','Sevde N.','Sevde N.','N/A','N/A','N/A','N/A']},
+  {task:'Compensation cost recharges (GAL, regional recharges)',  v:['Sevde N.','N/A','Sevde N.','Sevde N.','N/A','N/A','N/A','N/A']},
+  {task:'RPO compensation cost recharges to projects',            v:['Sevde N.','N/A','Sevde N.','Sevde N.','N/A','N/A','N/A','N/A']},
+  {task:'Payroll postings, reconciliations, payroll checklist, External and Internal audit queries', v:['Sevde N.','N/A','Sevde N.','Sevde N.','N/A','N/A','N/A','N/A']},
+  {task:'Intercompany (IC) settlements',                          v:['Kubra S','Sevde N.','Sevde N.','Sevde N.','Civan D.','N/A','N/A','N/A']},
+  {task:'Journal postings (accruals, prepaid expenses, reconciliations)', v:['AEX1: Kubra S; AE41: Naile C','Sevde N.','Sevde N.','Civan D.','Civan D.','Naile C','Naile C','AEX1: Kubra S; AE41: Naile C']},
+  {task:'Taxes (VAT, WHT, CIT, etc.) and related journal entries (ER etc)', v:['AEX1: Kubra S; AE41: Naile C','N/A','Sevde N.','Civan D.','N/A','Naile C','Naile C','AEX1: Kubra S; AE41: Naile C']},
+  {task:'Completion of closing checklist and overall review',     v:['Naile C','Sevde N.','Sevde N.','Kubra S','Civan D.','N/A','N/A','N/A']},
+  {task:'Preparation of supporting documents for VA report (Checklist, BS pack, Salary RF, Prepaid Compensation, etc.)', v:['Naile C','Sevde N.','Sevde N.','Kubra S','Civan D.','N/A','N/A','N/A']},
+  {task:'VA commentaries and communication with reviewers',       v:['Naile C','Sevde N.','Sevde N.','Kubra S','Civan D.','N/A','N/A','N/A']},
+  {task:'Internal audit queries',                                 v:['Naile C','Sevde N.','Sevde N.','Kubra S','Civan D.','N/A','N/A','N/A']},
+  {task:'External EY SOX audit queries',                          v:['Naile C','Sevde N.','Naile C','Kubra S','Kubra S','N/A','N/A','N/A']},
+  {task:'Financial statement (FS) audit',                         v:['AEX1: Kubra S; AE41: Naile C; AE43 Abu Dhabi: Naile C','Sevde N.','Sevde N.','Civan D.','N/A','Naile C','N/A','N/A']},
+  {task:'CFO Letters',                                            v:['Civan D.','Civan D.','Civan D.','Civan D.','Civan D.','N/A','N/A','N/A']},
+  {task:'Parallel ledger postings',                               v:['AEX1: Kubra S; AE41: Naile C','N/A','N/A','Civan D.','N/A','N/A','N/A','N/A']},
+  {task:'DMTT obligation',                                        v:['Kubra S','N/A','N/A','N/A','N/A','Naile C','N/A','N/A']},
+  {task:'Carve-out financials',                                   v:['Naile C (Abu Dhabi Entity)','N/A','N/A','N/A','N/A','N/A','N/A','N/A']},
+  {task:'ICV Certificate Process',                                v:['Naile C (Abu Dhabi Entity)','N/A','Sevde N.','Civan D.','N/A','N/A','N/A','N/A']},
+  {task:'Tax Package (for the current packages)',                 v:['Kubra S','Sevde N.','Sevde N.','Civan D.','Civan D.','N/A','N/A','N/A']},
+  {task:'Monthly master leave file',                              v:['Sevde N.','N/A','Sevde N.','Sevde N.','N/A','N/A','N/A','N/A']},
+];
+
+const PERSONS = ['Civan D.','Sevde N.','Naile C','Kubra S'];
+const COLORS = {
+  'Civan D.': '#2980b9',
+  'Sevde N.': '#27ae60',
+  'Naile C':  '#e67e22',
+  'Kubra S':  '#8e44ad',
+};
+const LIGHT = {
+  'Civan D.': '#d6eaf8',
+  'Sevde N.': '#d5f5e3',
+  'Naile C':  '#fdebd0',
+  'Kubra S':  '#e8daef',
+};
+
+// Extract persons mentioned in a cell
+function cellPersons(val) {
+  if (!val || val === 'N/A') return [];
+  return PERSONS.filter(p => val.includes(p));
+}
+
+// ── BUILD LEGEND ──────────────────────────────────────────────────────────────
+const legendEl = document.getElementById('legend');
+PERSONS.forEach(p => {
+  const el = document.createElement('div');
+  el.className = 'legend-item';
+  el.id = 'leg-' + p.replace(/\W/g,'_');
+  el.innerHTML = `<div class="legend-dot" style="background:${COLORS[p]}"></div><span class="legend-label">${p}</span>`;
+  el.title = 'Click to highlight';
+  el.onclick = () => highlightPerson(p);
+  legendEl.appendChild(el);
+});
+
+// ── VIEW 1: MATRIX ────────────────────────────────────────────────────────────
+function buildMatrix() {
+  const tbl = document.getElementById('matrix-table');
+  // Header
+  let html = '<thead><tr><th>Task / Activity</th>';
+  regionKeys.forEach((k,i) => html += `<th title="${regions[i]}">${k}</th>`);
+  html += '</tr></thead><tbody>';
+
+  raw.forEach((row, ri) => {
+    html += `<tr data-ri="${ri}"><td class="task-cell">${row.task}</td>`;
+    row.v.forEach((val, ci) => {
+      if (!val || val === 'N/A') {
+        html += `<td class="cell-na">N/A</td>`;
+      } else {
+        const persons = cellPersons(val);
+        let chips = '';
+        if (persons.length) {
+          persons.forEach(p => {
+            chips += `<span class="person-chip" style="background:${COLORS[p]}">${p}</span>`;
+          });
+          // If there's extra context (entity labels), show faded
+          const clean = val.replace(/AEX1:|AE41:|AE43 Abu Dhabi:|Abu Dhabi Entity/g,'').trim();
+          const extra = clean.replace(new RegExp(persons.join('|'),'g'),'').replace(/[;,]/g,'').trim();
+          if (extra) chips += `<span style="font-size:.7rem;color:#888;margin-left:2px">${extra}</span>`;
+        } else {
+          chips = `<span style="font-size:.78rem">${val}</span>`;
+        }
+        html += `<td>${chips}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  tbl.innerHTML = html;
+
+  // Populate filters
+  const fp = document.getElementById('filter-person');
+  PERSONS.forEach(p => fp.innerHTML += `<option value="${p}">${p}</option>`);
+  const fr = document.getElementById('filter-region');
+  regionKeys.forEach((k,i) => fr.innerHTML += `<option value="${i}">${k}</option>`);
+}
+
+function filterMatrix() {
+  const person = document.getElementById('filter-person').value;
+  const regionIdx = document.getElementById('filter-region').value;
+  const search = document.getElementById('filter-search').value.toLowerCase();
+
+  const rows = document.querySelectorAll('#matrix-table tbody tr');
+  rows.forEach(tr => {
+    const ri = +tr.dataset.ri;
+    const row = raw[ri];
+    let show = true;
+
+    if (search && !row.task.toLowerCase().includes(search)) show = false;
+
+    if (person) {
+      const hasInRegion = regionIdx !== ''
+        ? cellPersons(row.v[+regionIdx]).includes(person)
+        : row.v.some(v => cellPersons(v).includes(person));
+      if (!hasInRegion) show = false;
+    } else if (regionIdx !== '') {
+      if (!row.v[+regionIdx] || row.v[+regionIdx] === 'N/A') show = false;
+    }
+
+    tr.classList.toggle('hidden', !show);
+  });
+}
+
+function resetFilters() {
+  document.getElementById('filter-person').value = '';
+  document.getElementById('filter-region').value = '';
+  document.getElementById('filter-search').value = '';
+  filterMatrix();
+}
+
+let highlightedPerson = null;
+function highlightPerson(p) {
+  if (highlightedPerson === p) {
+    highlightedPerson = null;
+    document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dimmed'));
+    document.querySelectorAll('#matrix-table td:not(.task-cell)').forEach(td => td.style.opacity = '');
+  } else {
+    highlightedPerson = p;
+    PERSONS.forEach(q => {
+      document.getElementById('leg-' + q.replace(/\W/g,'_')).classList.toggle('dimmed', q !== p);
+    });
+    document.querySelectorAll('#matrix-table tbody tr').forEach(tr => {
+      const ri = +tr.dataset.ri;
+      const row = raw[ri];
+      Array.from(tr.querySelectorAll('td:not(.task-cell)')).forEach((td, ci) => {
+        const has = cellPersons(row.v[ci]).includes(p);
+        td.style.opacity = has ? '1' : '0.15';
+      });
+    });
+  }
+}
+
+// ── VIEW 2: HEATMAP ───────────────────────────────────────────────────────────
+function buildHeatmap() {
+  // Build count matrix and task lists
+  const counts = {}; // person -> region -> count
+  const taskLists = {}; // person -> region -> [tasks]
+  PERSONS.forEach(p => {
+    counts[p] = {};
+    taskLists[p] = {};
+    regionKeys.forEach(k => { counts[p][k] = 0; taskLists[p][k] = []; });
+  });
+
+  raw.forEach(row => {
+    row.v.forEach((val, ci) => {
+      const k = regionKeys[ci];
+      cellPersons(val).forEach(p => {
+        counts[p][k]++;
+        taskLists[p][k].push(row.task);
+      });
+    });
+  });
+
+  // Max for color scaling
+  const allCounts = PERSONS.flatMap(p => regionKeys.map(k => counts[p][k]));
+  const maxCount = Math.max(...allCounts);
+
+  let html = '<thead><tr><th style="text-align:left;padding:10px 16px">Person</th>';
+  regionKeys.forEach((k,i) => html += `<th title="${regions[i]}">${k}</th>`);
+  html += '<th>Total</th></tr></thead><tbody>';
+
+  PERSONS.forEach(p => {
+    const total = regionKeys.reduce((s,k) => s + counts[p][k], 0);
+    html += `<tr>`;
+    html += `<td class="person-header" style="background:${COLORS[p]}">${p}<small>${total} tasks total</small></td>`;
+    regionKeys.forEach(k => {
+      const n = counts[p][k];
+      if (n === 0) {
+        html += `<td class="zero">—</td>`;
+      } else {
+        const intensity = 0.2 + 0.8 * (n / maxCount);
+        const bg = hexAlpha(COLORS[p], intensity);
+        const tasks = taskLists[p][k].map(t => `• ${t.length > 45 ? t.slice(0,45)+'…' : t}`).join('<br>');
+        html += `<td style="background:${bg};color:${intensity > 0.6 ? 'white' : '#222'}">
+          ${n}
+          <div class="heatmap-tooltip"><b>${p} — ${k}</b><br><br>${tasks}</div>
+        </td>`;
+      }
+    });
+    html += `<td style="background:${COLORS[p]};color:white;font-size:1.2rem">${total}</td>`;
+    html += '</tr>';
+  });
+
+  // Coverage row
+  html += '<tr style="border-top:3px solid #ccc">';
+  html += `<td class="person-header" style="background:#444">Coverage (tasks)<small>tasks with at least one owner</small></td>`;
+  regionKeys.forEach((k, ci) => {
+    const covered = raw.filter(r => r.v[ci] && r.v[ci] !== 'N/A').length;
+    const pct = Math.round(100 * covered / raw.length);
+    const bg = `hsl(210,60%,${100 - pct * 0.5}%)`;
+    html += `<td style="background:${bg};color:${pct>60?'white':'#333'}">${covered}<small style="display:block;font-size:.65rem;font-weight:400">${pct}%</small></td>`;
+  });
+  html += `<td style="background:#444;color:white">${raw.length}</td></tr>`;
+  html += '</tbody>';
+  document.getElementById('heatmap-table').innerHTML = html;
+}
+
+function hexAlpha(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ── VIEW 3: SWIMLANES ─────────────────────────────────────────────────────────
+function buildSwimlanes() {
+  // person -> region -> [tasks]
+  const data = {};
+  PERSONS.forEach(p => { data[p] = {}; regionKeys.forEach(k => data[p][k] = []); });
+
+  raw.forEach(row => {
+    row.v.forEach((val, ci) => {
+      cellPersons(val).forEach(p => data[p][regionKeys[ci]].push(row.task));
+    });
+  });
+
+  const grid = document.getElementById('swimlane-grid');
+  PERSONS.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'swim-card';
+    const total = regionKeys.reduce((s,k) => s + data[p][k].length, 0);
+    let body = '';
+    regionKeys.forEach((k,i) => {
+      const tasks = data[p][k];
+      if (!tasks.length) return;
+      body += `<div class="swim-region">
+        <div class="swim-region-title">${k} <span style="font-weight:400;font-size:.7rem;color:#aaa">— ${regions[i].split('(')[1]?.replace(')','') || ''}</span></div>
+        ${tasks.map(t => `<div class="swim-task">${t}</div>`).join('')}
+      </div>`;
+    });
+    card.innerHTML = `
+      <div class="swim-header" style="background:${COLORS[p]}">
+        <div class="swim-avatar">${p.split(' ')[0][0]}${p.split(' ').slice(-1)[0][0]}</div>
+        <span>${p}</span>
+        <span class="swim-total">${total} tasks</span>
+      </div>
+      <div class="swim-body">${body || '<p style="color:#aaa;font-size:.8rem">No tasks assigned</p>'}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['matrix','heatmap','swimlane'][i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildMatrix();
+buildHeatmap();
+buildSwimlanes();
+</script>
+</body>
+</html>
