@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Finance AI Copilot Training — Korn Ferry MENA Finance</title>
+  <meta name="description" content="Beginner-friendly, entertaining Finance AI & Copilot training one-pager for Korn Ferry MENA Finance teams."/>
+  <style>
+    /* ═══════════════════════════════════════════
+       ROOT VARIABLES & RESET
+       ═══════════════════════════════════════════ */
+    :root{
+      --kf:#006b54;--kf2:#0d8a71;--kf3:#0f4f43;--kf-light:#e6fbf3;
+      --ink:#1a2b2f;--muted:#6b7a80;--card:#ffffff;--line:#dbe7e2;
+      --blue:#dff0ff;--green:#e6fbf3;--amber:#fff8e1;--red:#ffe8e8;
+      --shadow:0 12px 32px rgba(0,0,0,.10);--radius:18px;--max:1200px;
+      --grad-hero:linear-gradient(135deg,#041e18 0%,#0a3d32 40%,#0d6b56 100%);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;scroll-padding-top:70px}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ink);background:#f5f9f7;line-height:1.6}
+    a{color:var(--kf);text-decoration:none;font-weight:600}
+    a:hover{text-decoration:underline}
+    .wrap{width:min(var(--max),92vw);margin:0 auto}
+    img{max-width:100%}
+
+    /* ═══════════════════════════════════════════
+       READING PROGRESS BAR
+       ═══════════════════════════════════════════ */
+    .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,#00e6a0,var(--kf),#00e6a0);width:0%;z-index:999;transition:width .15s ease}
+
+    /* ═══════════════════════════════════════════
+       HERO SECTION
+       ═══════════════════════════════════════════ */
+    .hero{position:relative;overflow:hidden;background:var(--grad-hero);color:#fff;padding:56px 0 44px}
+    .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='rgba(255,255,255,.07)'/%3E%3C/svg%3E");opacity:.6}
+    .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;position:relative;z-index:2}
+    .hero .eyebrow{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:8px 16px;border-radius:999px;font-weight:700;font-size:.88rem;letter-spacing:.03em;backdrop-filter:blur(8px)}
+    .hero h1{font-size:clamp(2rem,4.8vw,3.8rem);line-height:1.06;margin:.6rem 0 1rem;text-wrap:balance}
+    .hero h1 .accent{background:linear-gradient(90deg,#5cffc8,#00e6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{font-size:1.05rem;color:#d4f5e8;max-width:700px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+    .chip{padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:.85rem;color:#c8f0df}
+    .hero-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:22px;padding:22px;backdrop-filter:blur(14px);box-shadow:var(--shadow)}
+    .hero-card h3{margin:0 0 14px;color:#fff;font-size:1.1rem}
+    .tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{padding:8px 14px;border-radius:12px;background:rgba(0,230,160,.12);border:1px solid rgba(0,230,160,.25);font-size:.88rem;color:#a8ffd8;font-weight:600}
+    /* Floating orbs */
+    .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.3;z-index:1}
+    .orb1{width:300px;height:300px;background:#00e6a0;top:-10%;right:5%;animation:orb-float 12s ease-in-out infinite}
+    .orb2{width:200px;height:200px;background:#006b54;bottom:-5%;left:10%;animation:orb-float 15s ease-in-out infinite reverse}
+    @keyframes orb-float{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
+
+    /* ═══════════════════════════════════════════
+       STICKY NAV
+       ═══════════════════════════════════════════ */
+    .focus-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #dde8e4;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+    .focus-nav .wrap{display:flex;gap:6px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+    .focus-nav .wrap::-webkit-scrollbar{display:none}
+    .focus-nav a{white-space:nowrap;font-weight:700;color:var(--kf3);padding:9px 14px;border-radius:999px;border:1px solid #e2ece8;background:#fff;font-size:.88rem;transition:all .2s ease}
+    .focus-nav a:hover,.focus-nav a:focus{transform:translateY(-1px);background:var(--kf-light);border-color:#b8ddd0;text-decoration:none}
+    .focus-nav a.ext{background:var(--kf3);color:#fff;border-color:var(--kf3)}
+    .focus-nav a.ext:hover{background:var(--kf);transform:translateY(-1px)}
+
+    /* ═══════════════════════════════════════════
+       MAIN & SECTIONS
+       ═══════════════════════════════════════════ */
+    main{padding:32px 0 80px}
+    section{margin:0 0 36px;opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+    section.visible{opacity:1;transform:translateY(0)}
+    .section-head{margin-bottom:18px}
+    .section-head h2{color:var(--kf3);font-size:clamp(1.3rem,2.5vw,2rem);display:flex;align-items:center;gap:12px}
+    .section-head h2 .icon{font-size:1.4em}
+    .section-head .sub{font-size:.92rem;color:var(--muted);margin-top:4px}
+
+    /* Grid & Cards */
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}
+    .span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+    .card{grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 6px 20px rgba(5,35,28,.05);position:relative;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+    .card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(5,35,28,.10)}
+    .card h3{color:var(--kf3);margin:0 0 10px;font-size:1.1rem}
+    .card p{margin:0 0 10px}
+
+    /* Callout boxes */
+    .callout{padding:14px 16px;border-radius:14px;margin:12px 0;font-size:.95rem}
+    .callout.blue{background:var(--blue);border:1px solid #c4dff8}
+    .callout.green{background:var(--green);border:1px solid #b8e8d5}
+    .callout.amber{background:var(--amber);border:1px solid #f0dfa8}
+    .callout.red{background:var(--red);border:1px solid #f0c4c4}
+    .callout.fun{background:linear-gradient(135deg,#f0fff8,#e8f8ff);border:1px solid #c0e8d8;font-style:italic}
+
+    /* Tables */
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:.92rem;margin:8px 0}
+    th{background:var(--kf3);color:#fff;padding:12px 14px;text-align:left;font-weight:700}
+    th:first-child{border-radius:12px 0 0 0}th:last-child{border-radius:0 12px 0 0}
+    td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+    tr:nth-child(even) td{background:#f8fcfa}
+    tr:hover td{background:#edf7f3}
+    tr:last-child td:first-child{border-radius:0 0 0 12px}
+    tr:last-child td:last-child{border-radius:0 0 12px 0}
+
+    /* Prompt blocks */
+    .prompt-block{background:#0c2722;color:#d4f5e8;padding:18px 20px;border-radius:14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.88rem;line-height:1.65;margin:10px 0;position:relative;white-space:pre-wrap;border:1px solid #1a4a3e}
+    .prompt-block::before{content:'💬 Prompt';position:absolute;top:-10px;left:14px;background:var(--kf2);color:#fff;padding:2px 10px;border-radius:8px;font-size:.75rem;font-weight:700;font-family:'Segoe UI',sans-serif}
+
+    /* Animated bars */
+    .bar-wrap{display:grid;gap:12px;margin:12px 0}
+    .bar-label{display:flex;justify-content:space-between;font-weight:700;color:var(--kf3);font-size:.88rem;margin-bottom:4px}
+    .bar{height:20px;border-radius:999px;background:#e9f3ef;overflow:hidden;border:1px solid #d8e8e1}
+    .bar span{display:block;height:100%;border-radius:999px;width:0;transition:width 1.5s cubic-bezier(.2,.9,.2,1)}
+    .bar span.green-bar{background:linear-gradient(90deg,var(--kf),var(--kf2))}
+    .bar span.blue-bar{background:linear-gradient(90deg,#2196f3,#64b5f6)}
+
+    /* Timeline / Steps */
+    .timeline{display:grid;gap:14px}
+    .step{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start}
+    .step-badge{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,var(--kf),var(--kf2));color:#fff;font-weight:900;font-size:1.1rem;box-shadow:0 6px 16px rgba(0,107,84,.25);animation:pulse-badge 3s ease-in-out infinite}
+    .step-card{background:#f8fcfa;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+    @keyframes pulse-badge{0%,100%{box-shadow:0 6px 16px rgba(0,107,84,.25)}50%{box-shadow:0 6px 24px rgba(0,107,84,.45)}}
+
+    /* Accordion */
+    .accordion{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:10px 0}
+    .accordion details+details{border-top:1px solid var(--line)}
+    .accordion summary{cursor:pointer;list-style:none;padding:14px 16px;font-weight:800;color:var(--kf3);background:linear-gradient(180deg,#fbfefd,#f5fbf8);transition:background .2s}
+    .accordion summary:hover{background:#ecfaf5}
+    .accordion summary::-webkit-details-marker{display:none}
+    .accordion summary::after{content:'▸';float:right;transition:transform .2s}
+    details[open] summary::after{transform:rotate(90deg)}
+    .accordion .body{padding:4px 16px 16px}
+
+    /* Spotlight boxes */
+    .spotlight{display:grid;gap:12px;margin:12px 0}
+    .spot{padding:14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fdfb)}
+    .spot strong{color:var(--kf)}
+
+    /* Source text */
+    .source{font-size:.82rem;color:var(--muted);font-style:italic}
+    .source-list{list-style:none;padding:0}.source-list li{margin-bottom:10px;padding-left:20px;position:relative}
+    .source-list li::before{content:'📄';position:absolute;left:0;top:0}
+    .small{font-size:.9rem;color:var(--muted)}
+
+    /* Visual card variant */
+    .visual-card{background:linear-gradient(180deg,#f8fffc,#eefaf5);border:1px solid #d8efe5;overflow:hidden}
+    .visual-card::after{content:'';position:absolute;bottom:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,107,84,.1),transparent 60%);border-radius:50%}
+
+    /* Fun trainer voice badge */
+    .trainer-voice{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fff3d8,#ffe8c8);border:1px solid #f0d498;padding:12px 16px;border-radius:14px;font-size:.95rem;margin:10px 0}
+    .trainer-voice::before{content:'🎤';font-size:1.2em}
+
+    /* Footer */
+    footer{background:var(--kf3);color:#c8e8dc;padding:28px 0;text-align:center;font-size:.9rem}
+    footer a{color:#7ddbba}
+    footer strong{color:#fff}
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════ */
+    @media(max-width:900px){
+      .hero-grid{grid-template-columns:1fr}
+      .span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}
+    }
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+  </style>
+</head>
+<body>
+
+<!-- Reading progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════ -->
+<header class="hero">
+  <div class="orb orb1"></div><div class="orb orb2"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">🎓 MENA Finance Team • AI Training • Beginner Level</div>
+      <h1>AI for Finance:<br>from <span class="accent">"What is AI?"</span> to <span class="accent">"Let's actually use it well"</span></h1>
+      <p>Entertaining, visual, and built for accountants. One page that covers the difference between a chatbot, Microsoft 365 Copilot, and agentic AI — with finance examples you'll recognise from your daily work in Excel, Outlook, Word, PowerPoint, and Teams.</p>
+      <div class="chips">
+        <span class="chip">👥 Audience: Finance beginners</span>
+        <span class="chip">🎯 Goal: Faster work, safer usage</span>
+        <span class="chip">📄 Format: Interactive one‑pager</span>
+        <span class="chip">🎭 Style: Entertaining but controlled</span>
+      </div>
+    </div>
+    <aside class="hero-card">
+      <h3>🧭 What you'll learn</h3>
+      <div class="tags">
+        <span class="tag">What AI actually is</span>
+        <span class="tag">What Copilot does</span>
+        <span class="tag">Chatbot vs Agentic</span>
+        <span class="tag">Basic vs M365 licence</span>
+        <span class="tag">Excel • Word • PPT • Outlook • Teams</span>
+        <span class="tag">Responsible use rules</span>
+      </div>
+      <div class="callout amber" style="margin-top:16px">
+        <strong>⚠️ Assumption flagged:</strong> This page is a training handout, not a formal policy document. All factual claims are tied to source notes shown throughout.
+      </div>
+    </aside>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     STICKY NAVIGATION
+     ═══════════════════════════════════════════ -->
+<nav class="focus-nav" id="focusNav">
+  <div class="wrap">
+    <a href="#why">🔥 Why this matters</a>
+    <a href="#what-ai">🧠 AI basics</a>
+    <a href="#copilot">🤖 What is Copilot?</a>
+    <a href="#differences">⚡ Chatbot vs Agentic</a>
+    <a href="#licensing">🔑 Basic vs M365</a>
+    <a href="#apps">📱 App examples</a>
+    <a href="#prompts">🧪 Prompt lab</a>
+    <a href="#safe">🛡️ Safe use</a>
+    <a href="#workshop">🏋️ Mini workshop</a>
+    <a href="#sources">📚 Sources</a>
+    <a href="https://kornferry.sharepoint.com/sites/KFAICenter" target="_blank" rel="noopener" class="ext">KF AI Center ↗</a>
+    <a href="https://kornferry.service-now.com/esc?id=sc_cat_item&sys_id=9fab39e2d7532100a9ad1e173e24d484" target="_blank" rel="noopener" class="ext">KF IT Support ↗</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="wrap">
+
+  <!-- ─── SECTION 1: WHY THIS MATTERS ─── -->
+  <section id="why">
+    <div class="section-head">
+      <h2><span class="icon">🔥</span> Why this matters for a finance team</h2>
+      <div class="sub">Designed for beginners • built around day‑to‑day finance work</div>
+    </div>
+    <div class="grid">
+      <div class="card span-8">
+        <p><strong>Finance teams don't need more noise. They need less friction.</strong></p>
+        <p>When the MENA finance team requested Microsoft 365 Copilot licences (via IT request REQ0367634), the justification was clear: reduce context‑switching across document authoring, modelling, research, stakeholder communication and project coordination — while working inside the apps you already use: Outlook, Excel, Word, PowerPoint and Teams.</p>
+        <p class="source">Source: REQ0367634 licence request email, lines 19–37.</p>
+
+        <div class="callout green">
+          <strong>💡 What this means for you:</strong> This training exists because the team made a case that AI can help with your actual finance work — not as a toy, but as a practical tool. The examples in this page come directly from that request and your activation emails.
+        </div>
+
+        <div class="trainer-voice">
+          "Think of it this way: you already have a calculator on your desk. This training is about learning to use the scientific functions instead of just the plus button."
+        </div>
+      </div>
+      <div class="card span-4 visual-card">
+        <h3>⏱️ Where finance time disappears</h3>
+        <div class="bar-wrap">
+          <div>
+            <div class="bar-label"><span>Email threads</span><span>high drag</span></div>
+            <div class="bar"><span class="green-bar" data-width="88"></span></div>
+          </div>
+          <div>
+            <div class="bar-label"><span>Variance commentary</span><span>repeatable</span></div>
+            <div class="bar"><span class="green-bar" data-width="79"></span></div>
+          </div>
+          <div>
+            <div class="bar-label"><span>Meeting catch‑up</span><span>very suitable</span></div>
+            <div class="bar"><span class="green-bar" data-width="84"></span></div>
+          </div>
+          <div>
+            <div class="bar-label"><span>Policy look‑ups</span><span>needs sources</span></div>
+            <div class="bar"><span class="green-bar" data-width="71"></span></div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:12px"><strong>⚠️ Assumption flagged:</strong> The bars are visual emphasis only, not measured data. They illustrate common finance pain points.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 2: AI BASICS ─── -->
+  <section id="what-ai">
+    <div class="section-head">
+      <h2><span class="icon">🧠</span> AI basics — in plain finance English</h2>
+      <div class="sub">Simple language first, buzzwords last</div>
+    </div>
+    <div class="grid">
+      <div class="card span-6">
+        <h3>What is AI?</h3>
+        <p><strong>Artificial intelligence</strong> is software designed to perform tasks that normally require language understanding, pattern recognition, or decision support.</p>
+        <p><strong>Generative AI</strong> creates content such as summaries, tables, drafts, slide structures, or explanations. It predicts outputs based on patterns and the context you give it. That is why <em>context matters so much</em>.</p>
+        <div class="callout green">
+          <strong>🧾 Finance translation:</strong> Treat AI as a very fast assistant for drafting, summarising, comparing and structuring — <strong>never</strong> as the final owner of accounting judgement.
+        </div>
+        <div class="trainer-voice">
+          "AI is like an incredibly fast intern who has read everything on the internet but has never actually closed a month-end. Useful? Absolutely. Trustworthy without review? Never."
+        </div>
+      </div>
+      <div class="card span-6">
+        <h3>📖 Core concepts — the cheat sheet</h3>
+        <table>
+          <tr><th>Term</th><th>Plain explanation</th><th>Finance example</th></tr>
+          <tr><td><strong>Prompt</strong></td><td>Your instruction to the AI</td><td>"Draft a month‑end variance note using this table."</td></tr>
+          <tr><td><strong>Context</strong></td><td>The information AI can use</td><td>Entity, period, currency, data table, audience</td></tr>
+          <tr><td><strong>Grounding</strong></td><td>Using files, emails, policy text or meetings as sources</td><td>Answer references an internal policy or workbook</td></tr>
+          <tr><td><strong>Hallucination</strong></td><td>A confident but <em>unsupported</em> answer</td><td>Invented GL code, policy rule or tax treatment 🚨</td></tr>
+          <tr><td><strong>Review</strong></td><td>The human checkpoint</td><td>Controller checks logic, numbers and wording before use ✅</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 3: WHAT IS COPILOT? ─── -->
+  <section id="copilot">
+    <div class="section-head">
+      <h2><span class="icon">🤖</span> What is Microsoft 365 Copilot?</h2>
+      <div class="sub">The useful part isn't "AI" — it's <em>where</em> the AI sits</div>
+    </div>
+    <div class="grid">
+      <div class="card span-8">
+        <p>Your activation email states that <strong>Microsoft 365 Copilot brings generative AI directly into Microsoft 365 apps</strong> — including Outlook, Word, Excel, PowerPoint, Teams and Edge — and that the licence provides <strong>secure, enterprise‑grade access</strong> aligned with Korn Ferry's standards for data protection and responsible use.</p>
+        <p class="source">Source: Your M365 Copilot activation email, lines 14–18.</p>
+        <div class="spotlight">
+          <div class="spot">
+            <strong>🎯 Why finance should care:</strong> The work already lives in Microsoft 365 — mail threads, Excel files, Word memos, PowerPoint packs and Teams recaps. The closer the assistant is to the work, the less copy‑paste and context loss you get.
+          </div>
+          <div class="spot">
+            <strong>👀 What to look for:</strong> The same email says to ensure you are signed in with your <strong>Korn Ferry account</strong> and to look for the <strong>"Work" indicator</strong> in web Copilot to confirm it is operating in the Korn Ferry environment.
+            <span class="source">Source: activation email, lines 53–57.</span>
+          </div>
+        </div>
+      </div>
+      <div class="card span-4 visual-card">
+        <h3>⚡ Quick reality check</h3>
+        <div class="timeline">
+          <div class="step"><div class="step-badge">1</div><div class="step-card"><strong>In a chat box:</strong> Useful for questions and first drafts.</div></div>
+          <div class="step"><div class="step-badge">2</div><div class="step-card"><strong>Inside M365:</strong> Useful where your actual finance work happens.</div></div>
+          <div class="step"><div class="step-badge">3</div><div class="step-card"><strong>With guardrails:</strong> Useful without pretending it is judgement.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 4: CHATBOT vs AGENTIC ─── -->
+  <section id="differences">
+    <div class="section-head">
+      <h2><span class="icon">⚡</span> Chatbot vs Work‑context Copilot vs Agentic Copilot</h2>
+      <div class="sub">This is the section most teams remember — because it changes how you think about the tool</div>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th style="width:18%">Mode</th><th style="width:26%">What it feels like</th><th style="width:30%">Where it helps</th><th style="width:26%">Review requirement</th></tr>
+        <tr>
+          <td><strong>💬 Simple chatbot</strong></td>
+          <td>You type a question and receive an answer or draft.</td>
+          <td>Explaining a concept, rewriting text, structuring a first draft.</td>
+          <td>Always review. No unsupported confidential data in unapproved tools.</td>
+        </tr>
+        <tr>
+          <td><strong>🏢 M365 Copilot<br>(work context)</strong></td>
+          <td>You ask, and the assistant can work with <em>permitted</em> emails, files, meetings and chats in Microsoft 365.</td>
+          <td>Summarising what someone sent/shared, catching up on meetings, drafting from a document or thread.<br><span class="source">Source: Explore M365 Copilot email, lines 28–35, 61–67 and 101–107.</span></td>
+          <td>Review sources and output; permissions still matter.</td>
+        </tr>
+        <tr>
+          <td><strong>🤖 Agentic Copilot</strong></td>
+          <td>A more governed assistant that follows rules, uses templates/tools, asks clarifying questions and escalates when needed.</td>
+          <td>Examples from the internal finance AI guide include bounded agents for SOX Q&A, accrual/variance analysis, SAP/BOBJ report help, intercompany accounting and policy Q&A.<br><span class="source">Source: Finance AI Copilot guide, lines 162–181.</span></td>
+          <td>Highest review discipline: source‑based, permission‑aware, with human‑in‑the‑loop escalation.</td>
+        </tr>
+      </table>
+      <div class="trainer-voice">
+        "A chatbot is like an eager graduate. Work‑context Copilot is the eager graduate <em>plus</em> access to the filing cabinet. Agentic Copilot is the eager graduate with a checklist, templates, escalation rules, and a manager who insists on evidence."
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 5: LICENSING ─── -->
+  <section id="licensing">
+    <div class="section-head">
+      <h2><span class="icon">🔑</span> Basic Copilot vs Microsoft 365 Copilot licence</h2>
+      <div class="sub">Why the licence difference matters to accountants</div>
+    </div>
+    <div class="grid">
+      <div class="card span-7">
+        <table>
+          <tr><th>Area</th><th>Basic / lighter experience</th><th>M365 Copilot experience</th></tr>
+          <tr><td><strong>Context</strong></td><td>Mostly what you type or paste</td><td>Can combine your prompt with permitted work context in Microsoft 365</td></tr>
+          <tr><td><strong>Where you work</strong></td><td>Often a standalone chat interface</td><td>Inside Outlook, Word, Excel, PowerPoint, Teams and Edge <span class="source">Source: activation email, lines 14–16.</span></td></tr>
+          <tr><td><strong>Finance value</strong></td><td>Good for generic explanation and rough drafting</td><td>More useful for real day‑to‑day finance tasks inside workflow tools</td></tr>
+          <tr><td><strong>Security framing</strong></td><td>Tool‑dependent</td><td>Explicitly described as secure, enterprise‑grade access aligned to Korn Ferry standards <span class="source">Source: activation email, line 18.</span></td></tr>
+        </table>
+      </div>
+      <div class="card span-5">
+        <h3>📋 The Finance Team's Case for Copilot</h3>
+        <div class="callout blue" style="margin-top:0">
+          <strong>ℹ️ Context:</strong> This refers to the Copilot licence request (REQ0367634) submitted by the MENA finance team. The justification listed below is what was stated in that request — it's included here as training context so you understand <em>why</em> the team invested in this tool.
+        </div>
+        <p>The request stated that M365 Copilot could help with:</p>
+        <ul style="margin:8px 0;padding-left:20px">
+          <li>Drafting stakeholder updates and compliance memos in <strong>Word</strong></li>
+          <li>Summarising lengthy email threads and meeting transcripts in <strong>Outlook and Teams</strong></li>
+          <li>Accelerating formula development in <strong>Excel</strong></li>
+          <li>Creating presentation‑ready outputs in <strong>PowerPoint</strong></li>
+        </ul>
+        <p class="source">Source: REQ0367634 email, lines 23–30.</p>
+        <div class="callout amber">
+          <strong>⚠️ Assumption flagged:</strong> These items are presented as training examples because they are explicitly described in the request, not as guaranteed fully automated outputs in every scenario.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 6: APP EXAMPLES ─── -->
+  <section id="apps">
+    <div class="section-head">
+      <h2><span class="icon">📱</span> App examples accountants can use immediately</h2>
+      <div class="sub">Practical, visual, and beginner‑safe</div>
+    </div>
+    <div class="grid">
+      <div class="card span-6">
+        <h3>📊 Excel</h3>
+        <p>Microsoft's Excel Copilot email says Copilot in Excel can <strong>go beyond suggestions and summaries</strong> when you allow it to edit the file, and that with your direction it can make changes using Excel's built‑in tools which you can review, keep, undo or refine.</p>
+        <p class="source">Source: Put Copilot to work in Excel, lines 10–16 and 31–39.</p>
+        <div class="prompt-block">Act as a finance controller.
+Using the table below, create a variance bridge by entity and account.
+Highlight variances above 10%.
+Draft a short review note for the Regional Financial Controller explaining the top movements and listing questions to ask the local finance manager.
+Constraints: do not invent drivers, flag any missing data.
+Output: table + commentary + questions.</div>
+      </div>
+      <div class="card span-6">
+        <h3>📧 Outlook & 💬 Teams</h3>
+        <div class="accordion">
+          <details open>
+            <summary>Outlook — quick wins</summary>
+            <div class="body">
+              <p>The Explore M365 Copilot email gives examples such as reviewing what someone has sent or shared — organised by emails, chats and files — and drafting an email to a person about a topic.</p>
+              <p class="source">Source: Explore email, lines 28–35 and 101–107.</p>
+            </div>
+          </details>
+          <details open>
+            <summary>Teams — recap wins</summary>
+            <div class="body">
+              <p>The same email gives meeting recap examples such as using Recap for missed meetings, asking Copilot to summarise meeting and side chat content, and organising decisions and open items in a table.</p>
+              <p class="source">Source: Explore email, lines 61–67 and 81–87.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+      <div class="card span-6">
+        <h3>📝 Word</h3>
+        <p>Use it for first drafts of finance memos, audit response drafts, policy summaries, close updates and stakeholder notes.</p>
+        <ul style="padding-left:20px">
+          <li>Ask for headings and a clear executive summary.</li>
+          <li>Ask for assumptions, reviewer notes and open questions.</li>
+          <li>Ask it to separate facts, interpretation and follow‑up needs.</li>
+        </ul>
+      </div>
+      <div class="card span-6">
+        <h3>📊 PowerPoint</h3>
+        <p>Use it for the first structure of a close pack, audit update, variance review, tax status pack or finance transformation briefing.</p>
+        <ul style="padding-left:20px">
+          <li>Ask for slide titles, key messages and speaker notes.</li>
+          <li>Ask it to make the narrative simpler for non‑finance audiences.</li>
+          <li>Always review claims and source references before sharing.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 7: PROMPT LAB ─── -->
+  <section id="prompts">
+    <div class="section-head">
+      <h2><span class="icon">🧪</span> Prompt lab — the beginner formula that actually works</h2>
+      <div class="sub">Use less magic. Give better instructions.</div>
+    </div>
+    <div class="grid">
+      <div class="card span-8">
+        <h3>🔬 The universal prompt formula</h3>
+        <div class="prompt-block">Act as [role].
+Task: [what you want].
+Context: [entity, period, currency, audience, source table/document].
+Constraints: [do not invent numbers, cite sources, flag assumptions, ask questions if missing data].
+Output format: [email / table / memo / slide outline / checklist].</div>
+
+        <h3 style="margin-top:20px">🎯 Three ready‑to‑use finance prompts</h3>
+
+        <div class="prompt-block">1) Variance commentary
+Act as a finance controller.
+Using the table below, draft a concise month‑end variance commentary for MENA leadership.
+Focus on movements over 10% or USD 25k.
+Do not invent explanations; where the driver is unclear, write a question for the local finance manager.
+Output: executive summary, top drivers, risks, follow‑up questions.</div>
+
+        <div class="prompt-block">2) Audit request tracker
+Act as an audit coordinator.
+Convert the below request into a tracker with columns: request, entity, owner, due date, evidence needed, status, risk if delayed.
+Flag unclear items and draft a polite follow‑up email.</div>
+
+        <div class="prompt-block">3) Policy Q&A
+Act as a careful accounting policy assistant.
+Answer the question using only the policy extract provided.
+If the extract is insufficient, say what is missing and suggest what needs confirmation.
+Include assumptions and a reviewer note.</div>
+      </div>
+      <div class="card span-4 visual-card">
+        <h3>❌ Weak vs ✅ Stronger</h3>
+        <table>
+          <tr><th>Weak prompt</th><th>Stronger prompt</th></tr>
+          <tr>
+            <td style="color:#c62828">Summarise this.</td>
+            <td style="color:var(--kf)">Summarise this for a finance manager, separating decisions, actions, risks and missing information.</td>
+          </tr>
+          <tr>
+            <td style="color:#c62828">Check my Excel.</td>
+            <td style="color:var(--kf)">Review the logic in this table, identify inconsistencies, explain likely causes, and list items needing human review.</td>
+          </tr>
+          <tr>
+            <td style="color:#c62828">Write an email.</td>
+            <td style="color:var(--kf)">Draft a polite but firm follow‑up requesting the missing support by Friday and include a status table.</td>
+          </tr>
+        </table>
+        <div class="trainer-voice" style="margin-top:16px">
+          "A weak prompt is like telling a taxi driver 'take me somewhere nice.' A strong prompt is 'take me to the Italian restaurant on Baker Street, avoid the motorway, I need to be there by 7.'"
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 8: SAFE USE ─── -->
+  <section id="safe">
+    <div class="section-head">
+      <h2><span class="icon">🛡️</span> Responsible AI — the non‑negotiables</h2>
+      <div class="sub">Important because finance work is sensitive by default</div>
+    </div>
+    <div class="grid">
+      <div class="card span-6">
+        <h3>🏛️ What Korn Ferry's IT security policy says</h3>
+        <table>
+          <tr><th>Rule</th><th>What it means for you</th></tr>
+          <tr><td><strong>Legitimate business use only</strong></td><td>AI tools must be used for work purposes.</td></tr>
+          <tr><td><strong>No unapproved external tools for confidential data</strong></td><td>Don't paste client or financial data into random AI websites.</td></tr>
+          <tr><td><strong>Secure storage</strong></td><td>Outputs containing sensitive data follow the same storage rules as any other finance file.</td></tr>
+          <tr><td><strong>Protected / confidential data handling</strong></td><td>Classification and handling rules apply to AI-generated content too.</td></tr>
+        </table>
+        <p class="source">Source: ITSecurityPolicy.pdf — legitimate business use, external tool restrictions, secure storage, protected/confidential data handling.</p>
+      </div>
+      <div class="card span-6">
+        <h3>🧭 The finance AI golden rules</h3>
+        <div class="timeline">
+          <div class="step"><div class="step-badge">1</div><div class="step-card"><strong>Review everything.</strong> AI does not replace professional judgement — it accelerates the first draft.</div></div>
+          <div class="step"><div class="step-badge">2</div><div class="step-card"><strong>Check the sources.</strong> If Copilot cites a file or email, open it and verify.</div></div>
+          <div class="step"><div class="step-badge">3</div><div class="step-card"><strong>Flag hallucinations.</strong> If a number, GL code, or policy reference looks unfamiliar — it probably is.</div></div>
+          <div class="step"><div class="step-badge">4</div><div class="step-card"><strong>Use approved tools only.</strong> M365 Copilot respects Korn Ferry permissions by default.</div></div>
+        </div>
+        <p class="source" style="margin-top:12px">Source: Finance AI Copilot guide, lines 153–160.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 9: MINI WORKSHOP ─── -->
+  <section id="workshop">
+    <div class="section-head">
+      <h2><span class="icon">🏋️</span> Mini workshop — 20 minutes, no chaos</h2>
+      <div class="sub">Designed for your first team session</div>
+    </div>
+    <div class="card">
+      <div class="timeline">
+        <div class="step"><div class="step-badge">1</div><div class="step-card"><strong>Pick a workflow:</strong> month‑end email, variance pack, audit support list, tax follow‑up, or meeting catch‑up.</div></div>
+        <div class="step"><div class="step-badge">2</div><div class="step-card"><strong>Write a weak prompt first:</strong> what someone would naturally type without thinking.</div></div>
+        <div class="step"><div class="step-badge">3</div><div class="step-card"><strong>Improve it:</strong> add role, task, context, constraints, and output format using the formula above.</div></div>
+        <div class="step"><div class="step-badge">4</div><div class="step-card"><strong>Review like a controller:</strong> Is it accurate? Unsupported? Risky? Missing something?</div></div>
+        <div class="step"><div class="step-badge">5</div><div class="step-card"><strong>Capture the good prompt:</strong> start building a team prompt library. 📚</div></div>
+      </div>
+      <div class="trainer-voice" style="margin-top:16px">
+        "The best AI user on your team won't be the most technical person. It'll be the one who writes the clearest instructions. Sound familiar? That's what good finance people already do."
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 10: SOURCES ─── -->
+  <section id="sources">
+    <div class="section-head">
+      <h2><span class="icon">📚</span> Source notes and links used in this page</h2>
+      <div class="sub">All factual claims on this page are grounded in the items below</div>
+    </div>
+    <div class="grid">
+      <div class="card span-8">
+        <ul class="source-list">
+          <li><strong>Your M365 Copilot License Is Now Active</strong> — states that M365 Copilot appears in Outlook, Word, Excel, PowerPoint, Teams and Edge; that the licence provides secure, enterprise‑grade access aligned to Korn Ferry standards; that users should look for the Work indicator in web Copilot; and that AI outputs should be reviewed before use. <span class="source">Opened from enterprise mail.</span></li>
+          <li><strong>Explore Microsoft 365 Copilot</strong> — gives work‑data examples, meeting recap prompts, decision/open items table prompt, and email drafting examples. <span class="source">Opened from enterprise mail.</span></li>
+          <li><strong>Put Copilot to work in Excel</strong> — says Copilot in Excel can go beyond suggestions and summaries by making changes through Excel's built‑in tools with review/undo/refine by the user. <span class="source">Opened from enterprise mail.</span></li>
+          <li><strong>ITSecurityPolicy.pdf</strong> — used for legitimate business use, external tool restrictions, secure storage, protected/confidential data handling and related safeguards. <span class="source">Opened from enterprise files.</span></li>
+          <li><strong>Designing an Enterprise Finance AI Copilot for Korn Ferry — A Strategic Guide.docx</strong> — used for the internal framing of multi‑agent finance copilots, RAG‑first/cite‑first guidance, tools for calculations, escalation, permissions and phased rollout. <span class="source">Opened from enterprise files.</span></li>
+          <li><strong>REQ0367634 licence request email</strong> — used for the finance business justification examples for Word, Outlook, Teams, Excel and PowerPoint. <span class="source">Opened from enterprise mail.</span></li>
+        </ul>
+      </div>
+      <div class="card span-4 visual-card">
+        <h3>🔗 Handy links</h3>
+        <ul style="padding-left:20px">
+          <li><a href="https://kornferry.sharepoint.com/sites/KFAICenter" target="_blank" rel="noopener">KF Generative AI Center</a></li>
+          <li><a href="https://kornferry.service-now.com/esc?id=sc_cat_item&sys_id=9fab39e2d7532100a9ad1e173e24d484" target="_blank" rel="noopener">KF IT Support ticket</a></li>
+        </ul>
+        <p class="small" style="margin-top:12px"><strong>Note:</strong> These links were explicitly present in the activation email. If access differs by account, users should use their standard IT support channel.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer>
+  <div class="wrap">
+    <p><strong>Finance AI Copilot Training</strong> • Korn Ferry MENA Finance Team • June 2026</p>
+    <p>Created as an interactive training handout. All claims sourced. Review before relying.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT — Animations & Interactions
+     ═══════════════════════════════════════════ -->
+<script>
+  // Reading progress bar
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  // Scroll-reveal sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+  // Animate bars on scroll
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.bar span[data-width]').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.bar-wrap').forEach(bw => barObserver.observe(bw));
+</script>
+</body>
+</html>
