@@ -143,6 +143,45 @@ summary{cursor:pointer;font-weight:700;color:var(--kf)}
 
 footer{padding:30px 6vw 60px;color:var(--muted);font-size:.85rem}
 
+/* ---------- game arcade ---------- */
+.arcade{background:linear-gradient(150deg,#07382e,#02241d);color:#eaf6f0;border:1px solid #114b3d}
+.arcade:hover{transform:none}
+.arcade h2{color:#fff}
+.arcade .secnum{color:var(--gold)}
+.arcade .small{color:#b9d2c8}
+.gamebox{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:20px;margin-top:18px}
+.gamebox h3{color:var(--gold);margin-top:0}
+.round{border-top:1px dashed rgba(255,255,255,.18);padding:12px 0 6px;margin-top:8px}
+.claim{font-family:var(--mono);font-size:.9rem;background:#0c1713;border:1px solid #1d3a30;border-radius:10px;padding:12px 14px;margin:8px 0;color:#d9ffef}
+.votebar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.vote{cursor:pointer;border:none;border-radius:999px;padding:9px 14px;font-weight:700;font-family:var(--body);font-size:.88rem;transition:transform .15s,box-shadow .15s}
+.vote:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.vote:active{transform:scale(.94)}
+.vote .cnt{display:inline-block;min-width:1.4em;text-align:center;background:rgba(0,0,0,.25);border-radius:999px;padding:0 6px;margin-left:6px}
+.v-green{background:#1f9d6b;color:#fff}.v-amber{background:var(--gold);color:#231a02}.v-red{background:#cf5454;color:#fff}.v-blue{background:#4a8fd6;color:#fff}
+.arcade details{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:#eaf6f0}
+.arcade summary{color:var(--gold)}
+.arcade table{border-color:rgba(255,255,255,.2)}
+.arcade td{border-color:rgba(255,255,255,.14)}
+.arcade tbody tr:hover{background:rgba(255,255,255,.06)}
+
+/* ---------- countdown clock ---------- */
+.clockwrap{display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;padding:10px 0}
+.clockface{position:relative;width:190px;height:190px}
+.clockface svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.14);stroke-width:9}
+.ring{fill:none;stroke:var(--gold);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s}
+.ring.danger{stroke:#ff6b6b}
+.hand{position:absolute;left:50%;top:50%;width:3px;height:80px;background:#fff;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(0deg);transition:transform 1s linear;border-radius:3px}
+.clockdigits{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:2.6rem;color:#fff;letter-spacing:.02em}
+.clockbtns{display:flex;flex-direction:column;gap:10px}
+.cbtn{cursor:pointer;border:2px solid var(--gold);background:transparent;color:var(--gold);font-weight:800;font-family:var(--body);border-radius:999px;padding:10px 20px;font-size:.95rem;transition:background .2s,color .2s,transform .15s}
+.cbtn:hover{background:var(--gold);color:#231a02;transform:translateY(-2px)}
+.cbtn.ghost{border-color:rgba(255,255,255,.4);color:#dfeee7}
+.cbtn.ghost:hover{background:rgba(255,255,255,.14);color:#fff}
+.timeup{animation:pulse .6s ease-in-out 4}
+@keyframes pulse{50%{transform:scale(1.08)}}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
@@ -182,6 +221,7 @@ footer{padding:30px 6vw 60px;color:var(--muted);font-size:.85rem}
   <a href="#apps">M365 apps</a>
   <a href="#prompts">Prompt lab</a>
   <a href="#safe">Safe use</a>
+  <a href="#games">🎮 Games</a>
   <a href="#workshop">Workshop</a>
   <a href="#slides">Slides</a>
   <a href="#sources">Sources</a>
@@ -412,6 +452,135 @@ Act as a careful accounting policy assistant. Answer the question using only the
   </div>
 </section>
 
+<!-- 9b. GAME ARCADE -->
+<section id="games" class="grid">
+  <div class="card arcade reveal">
+    <span class="secnum">Bonus · Section 09½</span>
+    <h2>🎮 The Game Arcade — for shy accountants only</h2>
+    <p class="small">Three 60-second games, all played by <strong>anonymous voting</strong> — nobody speaks, nobody is put on the spot. Run each with the thinking clock below, collect votes via a Teams poll, then hit “Reveal”. Accountants love finding errors; it’s literally the job.</p>
+
+    <!-- THE CLOCK -->
+    <div class="gamebox">
+      <h3>⏱️ The Thinking Clock</h3>
+      <p class="small">An original Countdown-style timer with live ticking sound (ticks speed up in the final 10 seconds, then a chime). <strong>Note:</strong> the real Countdown theme is copyrighted, so this clock plays its own royalty-free synthesised sound — if you want the genuine clip, play it separately from an official Channel 4 source during the call.</p>
+      <div class="clockwrap">
+        <div class="clockface" id="clockface">
+          <svg width="190" height="190" viewBox="0 0 190 190">
+            <circle class="ring-bg" cx="95" cy="95" r="84"></circle>
+            <circle class="ring" id="ring" cx="95" cy="95" r="84"></circle>
+          </svg>
+          <div class="hand" id="hand"></div>
+          <div class="clockdigits" id="digits">60</div>
+        </div>
+        <div class="clockbtns">
+          <button class="cbtn" onclick="startTimer(60)">▶ Start 60s</button>
+          <button class="cbtn" onclick="startTimer(30)">▶ Start 30s</button>
+          <button class="cbtn ghost" onclick="stopTimer()">⏹ Stop</button>
+          <button class="cbtn ghost" id="mutebtn" onclick="toggleMute()">🔊 Sound: on</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME 1 -->
+    <div class="gamebox">
+      <h3>🔍 Game 1 — Spot the Source: real or fabricated?</h3>
+      <p class="small">Five Copilot-style citations. Vote per item: does this source actually exist? <em>Lesson: AI can cite things that sound real but aren’t — always click through.</em></p>
+      <div class="round">
+        <div class="claim">“…per the Korn Ferry IT Security Policy.”</div>
+        <div class="votebar"><button class="vote v-green">✅ Real <span class="cnt">0</span></button><button class="vote v-red">👻 Fabricated <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>✅ <strong>Real</strong> — it’s the same policy cited throughout this training.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">“…per IFRS 17.4.2 Addendum on Intercompany Netting.”</div>
+        <div class="votebar"><button class="vote v-green">✅ Real <span class="cnt">0</span></button><button class="vote v-red">👻 Fabricated <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>👻 <strong>Fabricated</strong> — IFRS 17 is about insurance contracts, and no such addendum exists. It <em>sounds</em> plausible, which is exactly the danger.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">“…per IAS 21 — The Effects of Changes in Foreign Exchange Rates.”</div>
+        <div class="votebar"><button class="vote v-green">✅ Real <span class="cnt">0</span></button><button class="vote v-red">👻 Fabricated <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>✅ <strong>Real</strong> — a genuine IFRS standard, and one this team uses constantly.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">“…per US GAAP ASC 606-99, ‘Quick Revenue Shortcut’.”</div>
+        <div class="votebar"><button class="vote v-green">✅ Real <span class="cnt">0</span></button><button class="vote v-red">👻 Fabricated <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>👻 <strong>Fabricated</strong> — ASC 606 is real (revenue recognition), but there is no subtopic 99 and certainly no “quick shortcut”. If a citation promises a shortcut, be suspicious twice.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">“…per the M365 Copilot activation email (Korn Ferry IT rollout comms).”</div>
+        <div class="votebar"><button class="vote v-green">✅ Real <span class="cnt">0</span></button><button class="vote v-red">👻 Fabricated <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>✅ <strong>Real</strong> — the rollout email every licensed user received. Bonus lesson: a few people will vote “fabricated” on real sources — over-suspicion is also a calibration error.</p></details>
+      </div>
+    </div>
+
+    <!-- GAME 2 -->
+    <div class="gamebox">
+      <h3>🎰 Game 2 — The Confidence Meter</h3>
+      <p class="small">For each scenario, vote: 🟢 Trust it · 🟡 Verify first · 🔴 Suspect hallucination. The winner is the best-<em>calibrated</em> voter — not the most cynical one. <em>Lesson: review intensity should match risk, not paranoia.</em></p>
+      <div class="round">
+        <div class="claim">Copilot states a specific tax rate for a Middle East jurisdiction — from memory, with no source cited.</div>
+        <div class="votebar"><button class="vote v-green">🟢 Trust <span class="cnt">0</span></button><button class="vote v-amber">🟡 Verify <span class="cnt">0</span></button><button class="vote v-red">🔴 Suspect <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>🔴 <strong>Suspect / always verify.</strong> Unsourced + numeric + jurisdiction-specific is the classic hallucination danger zone — rates change, and a wrong rate in finance is not a typo, it’s a finding. Confirm against current official guidance or your advisers.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">Copilot summarises a Teams meeting you attended, citing the transcript, with links to the recap.</div>
+        <div class="votebar"><button class="vote v-green">🟢 Trust <span class="cnt">0</span></button><button class="vote v-amber">🟡 Verify <span class="cnt">0</span></button><button class="vote v-red">🔴 Suspect <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>🟡 <strong>Verify-light.</strong> It’s grounded in a real transcript, so structure is usually solid — but skim the names, owners and deadlines before forwarding. Grounding reduces risk; it doesn’t remove your review.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">Copilot explains the difference between an accrual and a prepayment in plain English, for a new joiner.</div>
+        <div class="votebar"><button class="vote v-green">🟢 Trust <span class="cnt">0</span></button><button class="vote v-amber">🟡 Verify <span class="cnt">0</span></button><button class="vote v-red">🔴 Suspect <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>🟢 <strong>Mostly trust.</strong> Conceptual, low-stakes, instantly self-verifiable by any accountant in the room. This is exactly the kind of task to delegate freely.</p></details>
+      </div>
+      <div class="round">
+        <div class="claim">Copilot produces an end-of-service benefit accrual formula for a Gulf entity — no policy or legislation cited.</div>
+        <div class="votebar"><button class="vote v-green">🟢 Trust <span class="cnt">0</span></button><button class="vote v-amber">🟡 Verify <span class="cnt">0</span></button><button class="vote v-red">🔴 Suspect <span class="cnt">0</span></button></div>
+        <details><summary>Reveal</summary><p>🔴 <strong>Suspect.</strong> Statutory calculations vary by jurisdiction, contract type and service length — and they change. This must be tied to the actual labour law text or policy before any journal touches it.</p></details>
+      </div>
+    </div>
+
+    <!-- GAME 3 -->
+    <div class="gamebox">
+      <h3>🏆 Game 3 — The Worst Prompt Awards</h3>
+      <p class="small">Four anonymised prompts “submitted by colleagues” (replace with real anonymous pre-session submissions via a Forms link for maximum laughs). Vote for the <em>worst</em> — then rewrite the winner together using the Section 08 formula. <em>Lesson: the worst prompt usually reveals the most common workflow.</em></p>
+      <div class="round">
+        <div class="claim">A) “fix this”</div>
+        <div class="votebar"><button class="vote v-blue">🗳️ Vote worst <span class="cnt">0</span></button></div>
+      </div>
+      <div class="round">
+        <div class="claim">B) “make it nice for the boss”</div>
+        <div class="votebar"><button class="vote v-blue">🗳️ Vote worst <span class="cnt">0</span></button></div>
+      </div>
+      <div class="round">
+        <div class="claim">C) “do the recon”</div>
+        <div class="votebar"><button class="vote v-blue">🗳️ Vote worst <span class="cnt">0</span></button></div>
+      </div>
+      <div class="round">
+        <div class="claim">D) “urgent help asap pls”</div>
+        <div class="votebar"><button class="vote v-blue">🗳️ Vote worst <span class="cnt">0</span></button></div>
+        <details><summary>Reveal: the group rewrite (example for “do the recon”)</summary>
+          <div class="claim">Act as a senior accountant. Task: review this bank reconciliation extract and list unmatched items by age and amount. Context: [entity], [period], [currency]; audience is the reviewing controller. Constraints: do not invent numbers; flag anything you cannot match and ask questions where data is missing. Output: a table of open items plus three reviewer questions.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- FACILITATION -->
+    <div class="gamebox">
+      <h3>📡 How to run this over a Teams call</h3>
+      <table>
+        <thead><tr><th>Step</th><th>What you do</th><th>Why it works for shy people</th></tr></thead>
+        <tbody>
+        <tr><td><strong>1. Pre-build polls</strong></td><td>Before the call, create one Teams Poll per game round (Meeting chat → ➕ Apps → <em>Polls/Forms</em> → multiple choice, e.g. “Real / Fabricated”). Keep <em>“Record names”</em> OFF so results stay anonymous.</td><td>Anonymous = honest votes, zero exposure.</td></tr>
+        <tr><td><strong>2. Share with sound</strong></td><td>Screen-share this page and tick <strong>“Include computer sound”</strong> in the Teams share tray — the thinking clock’s ticking will play for everyone.</td><td>The clock creates urgency and fun without anyone having to talk.</td></tr>
+        <tr><td><strong>3. Run a round</strong></td><td>Show the claim → launch the poll → hit <strong>Start 60s</strong>. When the chime sounds, close the poll, read the split aloud (“60/40 — interesting!”), click the in-page buttons to mirror the tally, then hit <strong>Reveal</strong>.</td><td>The reveal does the teaching — the discussion happens about the result, never about a person.</td></tr>
+        <tr><td><strong>4. No-poll fallback</strong></td><td>Use Teams reactions instead: 👍 = Real/Trust, ❤️ = Verify, 😂 = Fabricated/Suspect. Count them live.</td><td>One click, no typing, still nobody speaks.</td></tr>
+        <tr><td><strong>5. Prizes</strong></td><td>Best-calibrated voter (Game 2) and best rewrite (Game 3) get bragging rights — and their prompt enters the team prompt library.</td><td>Recognition without forced presentation.</td></tr>
+        </tbody>
+      </table>
+      <p class="small">⚠️ Assumption flagged: Teams Polls/Forms availability depends on your tenant settings — test one poll in a dry-run meeting before the session. The in-page vote buttons are a presenter tally tool only; they do not collect attendee votes.</p>
+    </div>
+  </div>
+</section>
+
 <!-- 10. WORKSHOP -->
 <section id="workshop" class="grid">
   <div class="card reveal">
@@ -517,6 +686,72 @@ const stamp = document.getElementById('stamp');
 new IntersectionObserver((es, obs) => es.forEach(e => {
   if (e.isIntersecting) { stamp.classList.add('slam'); obs.disconnect(); }
 }), {threshold:.4}).observe(document.getElementById('safe'));
+
+/* ---------- Game arcade: vote tallies (presenter tool) ---------- */
+document.querySelectorAll('.vote').forEach(b => b.addEventListener('click', () => {
+  const c = b.querySelector('.cnt');
+  c.textContent = (+c.textContent || 0) + 1;
+}));
+
+/* ---------- Thinking clock with synthesised sound ---------- */
+const ring = document.getElementById('ring');
+const hand = document.getElementById('hand');
+const digits = document.getElementById('digits');
+const face = document.getElementById('clockface');
+const CIRC = 2 * Math.PI * 84;
+ring.style.strokeDasharray = CIRC;
+ring.style.strokeDashoffset = 0;
+
+let tHandle = null, remaining = 0, total = 60, soundOn = true, actx = null;
+
+function ensureAudio(){
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+}
+function blip(freq, dur, when, type='square', vol=.07){
+  if (!soundOn || !actx) return;
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol, actx.currentTime + when);
+  g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + when + dur);
+  o.connect(g); g.connect(actx.destination);
+  o.start(actx.currentTime + when); o.stop(actx.currentTime + when + dur);
+}
+function tickSound(urgent){
+  blip(urgent ? 1500 : 1100, .05, 0);
+  if (urgent) blip(900, .05, .12);
+}
+function endJingle(){
+  // original royalty-free chime (not the Countdown theme)
+  [[523,.0],[659,.14],[784,.28],[1047,.42]].forEach(([f,t]) => blip(f, .35, t, 'triangle', .12));
+}
+function paint(){
+  digits.textContent = remaining;
+  ring.style.strokeDashoffset = CIRC * (1 - remaining / total);
+  hand.style.transform = `translate(-50%,-100%) rotate(${360 * (1 - remaining / total)}deg)`;
+  ring.classList.toggle('danger', remaining <= 10);
+}
+function startTimer(secs){
+  ensureAudio();
+  stopTimer();
+  total = secs; remaining = secs;
+  face.classList.remove('timeup');
+  paint();
+  tHandle = setInterval(() => {
+    remaining--;
+    if (remaining <= 0){
+      remaining = 0; paint(); stopTimer();
+      endJingle(); face.classList.add('timeup'); digits.textContent = '⏰';
+      return;
+    }
+    paint(); tickSound(remaining <= 10);
+  }, 1000);
+}
+function stopTimer(){ if (tHandle){ clearInterval(tHandle); tHandle = null; } }
+function toggleMute(){
+  soundOn = !soundOn;
+  document.getElementById('mutebtn').textContent = soundOn ? '🔊 Sound: on' : '🔇 Sound: off';
+}
 </script>
 </body>
 </html>
