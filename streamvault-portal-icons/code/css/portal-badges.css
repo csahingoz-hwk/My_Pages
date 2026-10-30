@@ -1,0 +1,51 @@
+/* StreamVault TV — Portal Badges
+ * APPEND to the end of css/main.css (shared styles must live there, see gotcha #12).
+ * Tizen 5.0 safe: no inset, no gap, no aspect-ratio, no backdrop-filter.
+ */
+.sv-pbadge {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-select: none;
+}
+.sv-pbadge--xs { width: 28px;  height: 28px; }
+.sv-pbadge--sm { width: 40px;  height: 40px; }
+.sv-pbadge--md { width: 56px;  height: 56px; }
+.sv-pbadge--lg { width: 120px; height: 120px; }
+.sv-pbadge--xl { width: 200px; height: 200px; }
+
+/* Corner badge on posters / channel tiles (parent must be position:relative) */
+.sv-pbadge-corner {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  -webkit-filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+          filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+}
+
+/* Inline next to a title, e.g. channel name in the player overlay */
+.sv-pbadge + .sv-pbadge-text,
+.sv-pbadge-inline { margin-left: 10px; vertical-align: middle; }
+
+/* Focus: badge pops a little with the tile */
+.focused .sv-pbadge-corner,
+:focus .sv-pbadge-corner {
+  -webkit-transform: scale(1.12);
+          transform: scale(1.12);
+  -webkit-transition: -webkit-transform 0.15s ease-out;
+          transition: transform 0.15s ease-out;
+}
+
+/* Portal-coloured glow (matches each icon) */
+.sv-pbadge--3b.sv-pbadge--md,   .sv-pbadge--3b.sv-pbadge--lg   { -webkit-filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.55)); filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.55)); }
+.sv-pbadge--tuga.sv-pbadge--md, .sv-pbadge--tuga.sv-pbadge--lg { -webkit-filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.55)); filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.55)); }
+.sv-pbadge--p3.sv-pbadge--md,   .sv-pbadge--p3.sv-pbadge--lg   { -webkit-filter: drop-shadow(0 0 12px rgba(34, 224, 122, 0.55)); filter: drop-shadow(0 0 12px rgba(34, 224, 122, 0.55)); }
+.sv-pbadge--p4.sv-pbadge--md,   .sv-pbadge--p4.sv-pbadge--lg   { -webkit-filter: drop-shadow(0 0 12px rgba(200, 75, 255, 0.55)); filter: drop-shadow(0 0 12px rgba(200, 75, 255, 0.55)); }
+.sv-pbadge--p5.sv-pbadge--md,   .sv-pbadge--p5.sv-pbadge--lg   { -webkit-filter: drop-shadow(0 0 12px rgba(255, 45, 85, 0.55)); filter: drop-shadow(0 0 12px rgba(255, 45, 85, 0.55)); }
+
+/* Portal switcher pill: icon only, active one full brightness */
+.sv-portal-pill { display: inline-block; padding: 6px 10px; border-radius: 20px; background: #1C2640; }
+.sv-portal-pill .sv-pbadge { margin: 0 4px; opacity: 0.45; }
+.sv-portal-pill .sv-pbadge.is-active { opacity: 1; }

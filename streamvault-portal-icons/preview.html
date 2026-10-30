@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal Icons Preview</title>
+<link rel="stylesheet" href="code/css/portal-badges.css">
+<style>
+  :root { --accent:#00D4FF; --deep:#080C14; --base:#1C2640; --elev:#243054; --text:#E8EEF8; --muted:#8A97B3; }
+  body { margin:0; background:var(--deep); color:var(--text); font-family:Outfit, system-ui, sans-serif; padding:32px 16px; }
+  .wrap { max-width:1100px; margin:0 auto; }
+  h1 { font-weight:600; margin:0 0 4px; }
+  h2 { font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:36px 0 12px; font-family:"JetBrains Mono", monospace; }
+  p.sub { color:var(--muted); margin:0; }
+  .row { display:flex; flex-wrap:wrap; }
+  .card { background:var(--base); border-radius:20px; padding:20px; margin:0 14px 14px 0; text-align:center; width:150px; }
+  .card code { display:block; margin-top:8px; color:var(--muted); font-size:12px; }
+  .list { background:var(--base); border-radius:14px; max-width:520px; overflow:hidden; }
+  .channel-row { padding:12px 16px; border-bottom:1px solid #2A3658; font-size:18px; }
+  .channel-row.focused { background:var(--elev); box-shadow:inset 3px 0 0 var(--accent); }
+  .poster-tile { position:relative; width:160px; height:240px; border-radius:14px; margin:0 14px 14px 0; overflow:hidden;
+                 background:linear-gradient(160deg,#2b3a66,#121a2e); }
+  .poster-tile span { position:absolute; bottom:12px; left:12px; right:12px; font-weight:600; }
+  .poster-tile.focused { transform:scale(1.05); box-shadow:0 0 32px rgba(0,212,255,.35); outline:3px solid var(--accent); }
+  .osd { background:linear-gradient(90deg,rgba(8,12,20,.95),rgba(8,12,20,.4)); border-radius:14px; padding:18px 22px; font-size:26px; font-weight:600; max-width:620px; }
+  .osd small { display:block; font-size:15px; color:var(--muted); font-weight:400; margin-top:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>StreamVault — Portal Source Icons</h1>
+  <p class="sub">Every portal name is shown as its icon. Hover any icon for the name.</p>
+
+  <h2>Icon map · lg (onboarding / settings)</h2>
+  <div class="row" id="map"></div>
+
+  <h2>Portal switcher pill · md</h2>
+  <div id="pill"></div>
+
+  <h2>Live TV merged list · xs</h2>
+  <div class="list" id="channels"></div>
+
+  <h2>Movies &amp; series tiles · corner sm</h2>
+  <div class="row" id="posters"></div>
+
+  <h2>Player overlay · md</h2>
+  <div class="osd" id="osd"></div>
+
+  <h2>Template swap · data-portal</h2>
+  <p>Now playing from <span data-portal="tuga" data-portal-size="xs">Tuga</span> and backup on <span data-portal="3b" data-portal-size="xs">3b</span>.</p>
+</div>
+
+<script src="code/js/portal-badges.js"></script>
+<script>
+  var B = SVPortalBadge;
+  var presets = [{ id:'3b', name:'3b' }, { id:'tuga', name:'Tuga' },
+                 { id:'p3', name:'Portal 3', icon:'p3' }, { id:'p4', name:'Portal 4', icon:'p4' }, { id:'p5', name:'Portal 5', icon:'p5' }];
+
+  var m = '';
+  for (var i = 0; i < presets.length; i++) m += '<div class="card">' + B.html(presets[i], 'lg') + '<code>' + presets[i].id + '</code></div>';
+  document.getElementById('map').innerHTML = m;
+
+  var p = '<div class="sv-portal-pill">';
+  for (i = 0; i < presets.length; i++) p += B.html(presets[i], 'md', i === 1 ? 'is-active' : '');
+  document.getElementById('pill').innerHTML = p + '</div>';
+
+  var ch = [['3b','BBC One HD'],['tuga','Sky Sports Main Event'],['3b','TRT 1'],['tuga','Show TV'],['p3','Eurosport 1']];
+  var c = '';
+  for (i = 0; i < ch.length; i++) c += '<div class="channel-row' + (i === 1 ? ' focused' : '') + '">' + B.html(ch[i][0], 'xs') + '<span class="sv-pbadge-text">' + ch[i][1] + '</span></div>';
+  document.getElementById('channels').innerHTML = c;
+
+  var pos = [['tuga','Dune: Part Two'],['3b','Kurtlar Vadisi'],['p4','Shōgun'],['p5','The Bear']];
+  var t = '';
+  for (i = 0; i < pos.length; i++) t += '<div class="poster-tile' + (i === 0 ? ' focused' : '') + '">' + B.corner(pos[i][0], 'sm') + '<span>' + pos[i][1] + '</span></div>';
+  document.getElementById('posters').innerHTML = t;
+
+  document.getElementById('osd').innerHTML = B.html('3b', 'md') + '<span class="sv-pbadge-text">BBC One HD</span><small>20:00 · EastEnders</small>';
+
+  B.swap(document);
+</script>
+</body>
+</html>
